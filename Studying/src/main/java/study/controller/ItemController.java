@@ -2,6 +2,7 @@ package study.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,9 +49,11 @@ public class ItemController {
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.POST)
-	Message post(String content) {
+	Message post(String content, Principal principal) {
+		User user = userRepository.findOne(principal.getName());
 
 		Item item = new Item(content);
+		item.setOwner(user);
 		itemRepository.save(item);
 
 		return new Message(0, "success");
@@ -62,7 +65,8 @@ public class ItemController {
 	@RequestMapping(value = "/files", method = RequestMethod.POST)
 	Message postWithFiles(String content,
 			@RequestParam("file") ArrayList<MultipartFile> files,
-			HttpServletRequest request) {
+			HttpServletRequest request,
+			Principal principal) {
 
 		String syspath = request.getServletContext().getRealPath("/");
 		System.out.println(syspath);
@@ -91,7 +95,10 @@ public class ItemController {
 			}
 		}
 		
+		User user = userRepository.findOne(principal.getName());
+
 		Item item = new Item(content);
+		item.setOwner(user);
 		item = itemRepository.save(item);
 		
 		for (FileItem fileItem : fileItems) {

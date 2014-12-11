@@ -1,6 +1,8 @@
 package study.controller;
 
+import java.security.Principal;
 import java.util.Collections;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import study.model.Authority;
+import study.model.Item;
 import study.model.Message;
 import study.model.User;
 import study.repository.AuthorityRepository;
@@ -98,6 +101,13 @@ public class UserController {
 	@RequestMapping(value = "/{username}/info", method = RequestMethod.GET)
 	User info(@PathVariable("username") User user) {
 		return user;
+	}
+	
+	@RequestMapping(value = "/{username}/stars", method = RequestMethod.GET)
+	Set<Item> stars(Principal principal) {
+		
+		User user = userRepository.findOne(principal.getName());
+		return user.getStars();
 	}
 
 }

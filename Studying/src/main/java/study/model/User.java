@@ -3,11 +3,13 @@ package study.model;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 
 import org.hibernate.validator.constraints.Email;
@@ -26,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * 如果有主从之分就使用 mappedBy 标识出谁是主（在从属的实体属性上标识）
  */
 @JsonIgnoreProperties({ "authorities", "accountNonExpired", "accountNonLocked",
-		"credentialsNonExpired", "enabled", "password" })
+		"credentialsNonExpired", "enabled", "password", "items"})
 @Entity
 public class User implements UserDetails {
 
@@ -55,6 +57,9 @@ public class User implements UserDetails {
 	@JoinTable(name = "ITEM_STAR_BY")
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<Item> stars;
+	
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="owner")
+	private Set<Item> items;
 
 	@JoinTable(name = "USER_AUTH")
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -168,6 +173,14 @@ public class User implements UserDetails {
 	
 	public Set<Item> getStars() {
 		return stars;
+	}
+	
+	public void setItems(Set<Item> items) {
+		this.items = items;
+	}
+	
+	public Set<Item> getItems() {
+		return items;
 	}
 	
 	@Override
