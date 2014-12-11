@@ -3,7 +3,6 @@ package study.model;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -13,13 +12,16 @@ import javax.persistence.PrePersist;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
- * TODO 使用更简单的用户权限，而不是使用 Authorities 和 User 两个实体 
- * 是不是有必要做这样一次变化呢？
+ * TODO 使用更简单的用户权限，而不是使用 Authorities 和 User 两个实体 是不是有必要做这样一次变化呢？
  * 
  * @author seal
  *
  */
+@JsonIgnoreProperties({ "authorities", "accountNonExpired", "accountNonLocked",
+		"credentialsNonExpired", "enabled", "password" })
 @Entity
 public class User implements UserDetails {
 
@@ -28,20 +30,21 @@ public class User implements UserDetails {
 	@Id
 	private String username;
 
-	@Column
 	private String password;
 
-	@Column
 	private boolean accountNonExpired;
 
-	@Column
 	private boolean accountNonLocked;
 
-	@Column
 	private boolean credentialsNonExpired;
 
-	@Column
 	private boolean enabled;
+
+	private String realname;
+
+	private String nickname;
+
+	private String mail;
 
 	@JoinTable(name = "USER_AUTH")
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -57,7 +60,7 @@ public class User implements UserDetails {
 
 	protected User() {
 	}
-	
+
 	public User(String username, String password, Set<Authority> authorities) {
 		this.username = username;
 		this.password = password;
@@ -80,9 +83,17 @@ public class User implements UserDetails {
 		this.password = password;
 	}
 
+	public void setAuthorities(Set<Authority> authorities) {
+		this.authorities = authorities;
+	}
+
 	@Override
 	public Collection<Authority> getAuthorities() {
 		return authorities;
+	}
+
+	public void setAccountNonExpired(boolean accountNonExpired) {
+		this.accountNonExpired = accountNonExpired;
 	}
 
 	@Override
@@ -90,9 +101,17 @@ public class User implements UserDetails {
 		return accountNonExpired;
 	}
 
+	public void setAccountNonLocked(boolean accountNonLocked) {
+		this.accountNonLocked = accountNonLocked;
+	}
+
 	@Override
 	public boolean isAccountNonLocked() {
 		return accountNonLocked;
+	}
+
+	public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+		this.credentialsNonExpired = credentialsNonExpired;
 	}
 
 	@Override
@@ -100,8 +119,47 @@ public class User implements UserDetails {
 		return credentialsNonExpired;
 	}
 
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	@Override
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	public void setRealname(String realname) {
+		this.realname = realname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public String getRealname() {
+		return realname;
+	}
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
+
+	public String getMail() {
+		return mail;
+	}
+
+	@Override
+	public String toString() {
+		return "User [username=" + username + ", password=" + password
+				+ ", accountNonExpired=" + accountNonExpired
+				+ ", accountNonLocked=" + accountNonLocked
+				+ ", credentialsNonExpired=" + credentialsNonExpired
+				+ ", enabled=" + enabled + ", realname=" + realname
+				+ ", nickname=" + nickname + ", authorities=" + authorities
+				+ "]";
 	}
 }

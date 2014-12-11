@@ -1,13 +1,10 @@
 package study.model;
 
-import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.PrePersist;
 
 import org.springframework.security.core.GrantedAuthority;
 
@@ -34,21 +31,9 @@ public class Authority implements GrantedAuthority {
 	@ManyToMany(mappedBy = "authorities")
 	private Set<User> users;
 
-	@Column
-	private Date createdTime;
-
 	@Override
 	public String getAuthority() {
 		return authority;
-	}
-
-	public Date getCreatedTime() {
-		return createdTime;
-	}
-
-	@PrePersist
-	protected void onCreated() {
-		createdTime = new Date();
 	}
 
 	public Set<User> getUsers() {
