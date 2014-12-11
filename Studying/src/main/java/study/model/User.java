@@ -10,6 +10,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.PrePersist;
 
+import org.hibernate.validator.constraints.Email;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,6 +20,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * 
  * @author seal
  *
+ */
+/*
+ * @manytomany 是多对多的关系，两个实体之间有主从之分也可以没有主从之分。
+ * 如果有主从之分就使用 mappedBy 标识出谁是主（在从属的实体属性上标识）
  */
 @JsonIgnoreProperties({ "authorities", "accountNonExpired", "accountNonLocked",
 		"credentialsNonExpired", "enabled", "password" })
@@ -44,7 +49,12 @@ public class User implements UserDetails {
 
 	private String nickname;
 
+	@Email
 	private String mail;
+	
+	@JoinTable(name = "ITEM_STAR_BY")
+	@ManyToMany(fetch = FetchType.EAGER)
+	private Set<Item> stars;
 
 	@JoinTable(name = "USER_AUTH")
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -151,7 +161,15 @@ public class User implements UserDetails {
 	public String getMail() {
 		return mail;
 	}
-
+	
+	public void setStars(Set<Item> stars) {
+		this.stars = stars;
+	}
+	
+	public Set<Item> getStars() {
+		return stars;
+	}
+	
 	@Override
 	public String toString() {
 		return "User [username=" + username + ", password=" + password

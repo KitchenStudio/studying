@@ -1,8 +1,24 @@
 package study.model;
 
+import java.util.Date;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * 
@@ -10,9 +26,18 @@ import javax.persistence.Id;
  * 
  * 比如 PPT、音频、视频等等
  * 
+ * 求助的时候，可能需要
+ * 图片与语音同时存在
+ * 
+ * 每一个消息都有可能是 文字、图片、语音 与 其他文件
+ * 
+ * 那么，我们以文字消息作为基本单位，文字消息可能跟随着多个文件，
+ * 文件可以是图片、语音以及其他的文件
+ * 
  * @author seal
  *
  */
+@JsonIgnoreProperties("starBys")
 @Entity
 public class Item {
 	
@@ -20,32 +45,41 @@ public class Item {
 	@GeneratedValue
 	private Long id;
 
-	private String type;
-	
 	private String content;
 	
-	private String url;
+	@OneToMany(cascade= CascadeType.ALL, mappedBy="item")
+	private Set<FileItem> fileItems;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createdTime;
+	
+	@ManyToMany(mappedBy = "stars")
+	private Set<User> starBys;
+	
+	private Long starNumber;
+	
+	@ManyToOne
+	private User owner;
+	
+	/*
+	 * 第一次保存实体前
+	 */
+	@PrePersist
+	void onUpdate() {
+		starNumber = 0L;
+		createdTime = new Date();
+	}
 	
 	protected Item() {
 		
 	}
 	
-	public Item(String type, String content, String url) {
-		this.type = type;
+	public Item(String content) {
 		this.content = content;
-		this.url = url;
 	}
 	
 	public Long getId() {
 		return id;
-	}
-	
-	public void setType(String type) {
-		this.type = type;
-	}
-	
-	public String getType() {
-		return type;
 	}
 	
 	public void setContent(String content) {
@@ -60,15 +94,35 @@ public class Item {
 		return content;
 	}
 	
-	public void setUrl(String url) {
-		this.url = url;
+	public void setStarBys(Set<User> starBys) {
+		this.starBys = starBys;
 	}
 	
-	public String getUrl() {
-		return url;
+	public Set<User> getStarBys() {
+		return starBys;
 	}
 	
-	public static String MESSAGE = "MESSAGE";
-	public static String FILE = "FILE";
+	public void setStarNumber(Long starNumber) {
+		this.starNumber = starNumber;
+	}
 	
+	public Long getStarNumber() {
+		return starNumber;
+	}
+	
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
+	
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+	
+	public Set<FileItem> getFileItems() {
+		return fileItems;
+	}
+	
+	public void setFileItems(Set<FileItem> fileItems) {
+		this.fileItems = fileItems;
+	}
 }

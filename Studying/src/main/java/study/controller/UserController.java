@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import study.form.UserForm;
 import study.model.Authority;
 import study.model.Message;
 import study.model.User;
@@ -78,7 +77,7 @@ public class UserController {
      * json 表示相关信息
 	 */
 	@RequestMapping(value = "/{username}/info", method = RequestMethod.PUT)
-	Message info(@Valid @RequestBody UserForm form,
+	Message info(@Valid @RequestBody User form,
 			@PathVariable("username") User user
 			) {
 		if (form.getRealname() != null) {
