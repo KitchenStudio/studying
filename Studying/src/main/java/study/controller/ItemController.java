@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,10 +29,21 @@ import study.repository.FileItemRepository;
 import study.repository.ItemRepository;
 import study.repository.UserRepository;
 
+/**
+ * 这个类是 负责帖子的交互逻辑
+ * 
+ * 现在，这个帖子支持包含消息，同时可以用上传图片、音频和其他文件
+ * 
+ * @author seal
+ *
+ */
 @RestController
 @RequestMapping("/item")
 public class ItemController {
 
+	/*
+	 * 以下为仓库实例，@Autowired 的注解使得Spring可以为我们提供这些对象
+	 */
 	@Autowired
 	private UserRepository userRepository;
 
@@ -41,6 +53,25 @@ public class ItemController {
 	@Autowired
 	private FileItemRepository fileItemRepository;
 
+	/**
+	 * 
+	 * 客户端可以以这样的形式调用
+	 * /item/?page=0&size=20&sort=id
+	 * page 页号
+	 * size 每页多少内容
+	 * sort 以那些属性排序（如果指定多个，则这样做 sort=username&sort=password）
+	 * 
+	 * 但是，这三个值都可以省略
+	 * 省略时默认就是上面举例的这个形式
+	 * 
+	 * 可以使用命令行工具 curl 进行测试，配合python的json.tool得到一个好看的形式
+	 * curl -u 18366116016:..xiao -X GET 127.0.0.1:8080/item/  | python -mjson.tool
+	 * 
+	 * @param pageable 客户端传来的参数，即上面的page、size、sort，可以查看PageRequest这个类
+	 * 的构造函数，PageRequest(page, size, sort)，而 PageRequest 是 Pageable 的实现类
+	 * 
+	 * @return
+	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	List<Item> list(Pageable pageable) {
 		Page<Item> page = itemRepository.findAll(pageable);
@@ -48,6 +79,13 @@ public class ItemController {
 		return page.getContent();
 	}
 
+	/**
+	 * curl -u 18366116016:..xiao -X POST -d "content=hello" 127.0.0.1:8080/item/ | python -mjson.tool
+	 * 
+	 * @param content
+	 * @param principal
+	 * @return
+	 */
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	Message post(String content, Principal principal) {
 		User user = userRepository.findOne(principal.getName());
