@@ -17,6 +17,10 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
     
+    /**
+     * 加密器
+     * @return
+     */
     @Bean
     BCryptPasswordEncoder bCryptPasswordEncoder(){
     	return new BCryptPasswordEncoder();
