@@ -79,7 +79,7 @@ public class UserController {
      * 事实上，我们会统一这个行为，有发生相应的错误都会设置 status code，以及发送一段
      * json 表示相关信息
 	 */
-	@RequestMapping(value = "/{username}/info", method = RequestMethod.PUT)
+	@RequestMapping(value = "/info", method = RequestMethod.PUT)
 	Message info(@Valid @RequestBody User form,
 			@PathVariable("username") User user
 			) {
@@ -98,16 +98,22 @@ public class UserController {
 		return new Message(0, "success");
 	}
 	
-	@RequestMapping(value = "/{username}/info", method = RequestMethod.GET)
+	@RequestMapping(value = "/info", method = RequestMethod.GET)
 	User info(@PathVariable("username") User user) {
 		return user;
 	}
 	
-	@RequestMapping(value = "/{username}/stars", method = RequestMethod.GET)
+	@RequestMapping(value = "/stars", method = RequestMethod.GET)
 	Set<Item> stars(Principal principal) {
 		
 		User user = userRepository.findOne(principal.getName());
 		return user.getStars();
+	}
+	
+	@RequestMapping(value = "/items", method = RequestMethod.GET)
+	Set<Item> items(Principal principal) {
+		User user = userRepository.findOne(principal.getName());
+		return user.getItems();
 	}
 
 }

@@ -37,6 +37,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author seal
  *
  */
+@SuppressWarnings("unused")
 @JsonIgnoreProperties("starBys")
 @Entity
 public class Item {

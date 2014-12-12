@@ -125,7 +125,6 @@ public class ItemController {
 			user.getStars().add(item);
 			userRepository.save(user);
 		}
-		;
 
 		return new Message(0, "success");
 	}
