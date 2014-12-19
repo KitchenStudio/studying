@@ -38,7 +38,7 @@ import study.repository.UserRepository;
  *
  */
 @RestController
-@RequestMapping("/item")
+@RequestMapping("/api/v1/item")
 public class ItemController {
 
 	/*
