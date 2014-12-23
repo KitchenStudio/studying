@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +42,8 @@ import study.repository.UserRepository;
 @RestController
 @RequestMapping("/api/v1/item")
 public class ItemController {
+	
+	private static final Logger log = LoggerFactory.getLogger(ItemController.class);
 
 	/*
 	 * 以下为仓库实例，@Autowired 的注解使得Spring可以为我们提供这些对象
@@ -56,7 +60,7 @@ public class ItemController {
 	/**
 	 * 
 	 * 客户端可以以这样的形式调用
-	 * /item/?page=0&size=20&sort=id
+	 * /api/v1/item/?page=0&size=20&sort=id
 	 * page 页号
 	 * size 每页多少内容
 	 * sort 以那些属性排序（如果指定多个，则这样做 sort=username&sort=password）
@@ -65,14 +69,14 @@ public class ItemController {
 	 * 省略时默认就是上面举例的这个形式
 	 * 
 	 * 可以使用命令行工具 curl 进行测试，配合python的json.tool得到一个好看的形式
-	 * curl -u 18366116016:..xiao -X GET 127.0.0.1:8080/item/  | python -mjson.tool
+	 * curl -u 18366116016:..xiao -X GET 127.0.0.1:8080/api/v1/item/  | python -mjson.tool
 	 * 
 	 * @param pageable 客户端传来的参数，即上面的page、size、sort，可以查看PageRequest这个类
 	 * 的构造函数，PageRequest(page, size, sort)，而 PageRequest 是 Pageable 的实现类
 	 * 
 	 * @return
 	 */
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = "", method = RequestMethod.GET)
 	List<Item> list(Pageable pageable) {
 		Page<Item> page = itemRepository.findAll(pageable);
 
@@ -80,13 +84,13 @@ public class ItemController {
 	}
 
 	/**
-	 * curl -u 18366116016:..xiao -X POST -d "content=hello" 127.0.0.1:8080/item/ | python -mjson.tool
+	 * curl -u 18366116016:..xiao -X POST -d "content=hello" 127.0.0.1:8080/api/v1/item/ | python -mjson.tool
 	 * 
 	 * @param content
 	 * @param principal
 	 * @return
 	 */
-	@RequestMapping(value = "/", method = RequestMethod.POST)
+	@RequestMapping(value = "", method = RequestMethod.POST)
 	Message post(String content, Principal principal) {
 		User user = userRepository.findOne(principal.getName());
 
@@ -105,6 +109,7 @@ public class ItemController {
 			@RequestParam("file") ArrayList<MultipartFile> files,
 			HttpServletRequest request,
 			Principal principal) {
+		log.info("content:" + content);
 
 		String syspath = request.getServletContext().getRealPath("/");
 		System.out.println(syspath);
