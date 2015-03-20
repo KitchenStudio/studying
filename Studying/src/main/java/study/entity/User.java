@@ -16,6 +16,7 @@ import javax.persistence.PrePersist;
 
 import org.hibernate.validator.constraints.Email;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -53,8 +54,8 @@ public class User implements UserDetails {
 
 	private String nickname;
 
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "FIGURE_ID")
+	@ManyToOne()
+	@JoinColumn(name = "FIGURE_ID", nullable = true)
 	private FileItem figure;
 
 	@Email
@@ -101,7 +102,8 @@ public class User implements UserDetails {
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		this.password = encoder.encode(password);
 	}
 
 	public void setAuthorities(Set<Authority> authorities) {

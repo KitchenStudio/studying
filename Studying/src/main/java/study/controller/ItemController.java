@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.util.BeanUtil;
 
+import study.entity.BaseItem;
 import study.entity.CommentItem;
 import study.entity.FileItem;
 import study.entity.Item;
@@ -105,35 +107,42 @@ public class ItemController {
 		for (Item item : page) {
 			ListItem listItem = new ListItem();
 			BeanUtils.copyProperties(item, listItem);
+			listItem.setUserName(item.getOwner().getNickname());
+			listItem.setStars(0);
+			listItem.setUps(0);
+			listItem.setComments(item.getComments().size());
 			items.add(listItem);
 		}
 
 		return items;
 	}
-	
+
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	DetailItem get(@PathVariable("id") Item item) {
 		DetailItem detailItem = new DetailItem();
-		detailItem.setUserFigure(item.getOwner().getFigure().getUrl());
-		
+		if (item.getOwner().getFigure() != null)
+			detailItem.setUserFigure(item.getOwner().getFigure().getUrl());
+
 		Set<CommentItem> comments = item.getComments();
-		for (CommentItem commentItem: comments) {
+		for (CommentItem commentItem : comments) {
 			Comment comment = new Comment();
 			comment.setContent(commentItem.getContent());
 			comment.setCreatedTime(commentItem.getCreatedTime());
-			comment.setUserFigure(commentItem.getOwner().getFigure().getUrl());
+			if (commentItem.getOwner().getFigure() != null)
+				comment.setUserFigure(commentItem.getOwner().getFigure()
+						.getUrl());
 			comment.setUsername(commentItem.getOwner().getNickname());
-			
-			for (FileItem fileItem:  commentItem.getFiles()) {
+
+			for (FileItem fileItem : commentItem.getFiles()) {
 				study.model.FileItem file = new study.model.FileItem();
 				BeanUtils.copyProperties(fileItem, file);
 				comment.getFiles().add(file);
 			}
+			detailItem.getComments().add(comment);
 		}
-		
+
 		return detailItem;
 	}
-	
 
 	@RequestMapping(value = "/loadmore", method = RequestMethod.POST)
 	List<Item> loadMore(int number) {
@@ -301,6 +310,5 @@ public class ItemController {
 
 		return new Message(0, "success");
 	}
-
 
 }
