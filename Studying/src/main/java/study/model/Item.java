@@ -51,22 +51,6 @@ public class Item {
 	
 	private String subject;
 
-	public String getSubject() {
-		return subject;
-	}
-
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
-	
-    public Long getPraiseNumber() {
-        return praiseNumber;
-    }
-
-    public void setPraiseNumber(Long praiseNumber) {
-        this.praiseNumber = praiseNumber;
-    }
-
     private Long praiseNumber;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
@@ -159,4 +143,21 @@ public class Item {
 	public User getOwner() {
 		return owner;
 	}
+
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+	
+    public Long getPraiseNumber() {
+        return praiseNumber;
+    }
+
+    public void setPraiseNumber(Long praiseNumber) {
+        this.praiseNumber = praiseNumber;
+    }
+
 }

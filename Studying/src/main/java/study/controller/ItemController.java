@@ -39,6 +39,7 @@ import study.model.User;
 import study.repository.FileItemRepository;
 import study.repository.ItemRepository;
 import study.repository.UserRepository;
+import study.service.PictureService;
 
 /**
  * 这个类是 负责帖子的交互逻辑
@@ -63,6 +64,9 @@ public class ItemController {
 
 	@Autowired
 	private ItemRepository itemRepository;
+	
+	@Autowired
+	private PictureService pictureService;
 	
 
 	@Autowired
@@ -156,8 +160,7 @@ public class ItemController {
 				url = path + "/upload/" + destFile.getName();
 
 				FileItem fileItem = new FileItem(filename, url, FileItem.OTHER);
-				System.out.println(isPicture(destFile.toString())+"true or false");
-				if (isPicture(destFile.toString())) {
+				if (pictureService.isPicture(destFile.toString())) {
 					BufferedImage buffered = ImageIO.read(destFile);
 					BufferedImage bufferimage = scale(buffered,
 							BufferedImage.TYPE_INT_RGB,
@@ -215,8 +218,7 @@ public class ItemController {
 				url = path + "/upload1/" + destFile.getName();
 
 				FileItem fileItem = new FileItem(filename, url, FileItem.OTHER);
-				System.out.println(isPicture(destFile.toString())+"true or false");
-				if (isPicture(destFile.toString())) {
+				if (pictureService.isPicture(destFile.toString())) {
 					BufferedImage buffered = ImageIO.read(destFile);
 					BufferedImage bufferimage = scale(buffered,
 							BufferedImage.TYPE_INT_RGB,
@@ -286,16 +288,5 @@ public class ItemController {
 		}
 		return dbi;
 	}
-
-	public boolean isPicture(String filename) {
-		String imgeArray[] = { "bmp", "dib", "gif", "jfif", "jpe", "jpeg",
-				"jpg", "png", "tif", "tiff", "ico" };
-
-		for (int i = 0; i < imgeArray.length; i++) {
-			if (filename.split("\\.")[1].equals(imgeArray[i])) {
-				return true;
-			}
-		}
-		return false;
-	}
+	
 }

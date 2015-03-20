@@ -24,7 +24,7 @@ public class HomeController {
 		return "login";
 	}
 	
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = {"/", "index.html"}, method = RequestMethod.GET)
 	String home(Model model, Pageable pageable) {
 		Page<Item> page = itemRepository.findAll(pageable);
 		
@@ -32,5 +32,7 @@ public class HomeController {
 
 		return "index";
 	}
+	
+	
 
 }
