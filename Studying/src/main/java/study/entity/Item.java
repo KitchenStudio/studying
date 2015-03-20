@@ -41,17 +41,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("unused")
 @JsonIgnoreProperties("starBys")
 @Entity
-public class Item {
-
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	private String content;
+public class Item extends BaseItem{
 	
 	private String subject;
 
-    private Long praiseNumber;
+	private Long praiseNumber;
+
+	private Long starNumber;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
 	private Set<FileItem> fileItems;
@@ -61,9 +57,6 @@ public class Item {
 
 	@ManyToMany(mappedBy = "stars")
 	private Set<User> starBys;
-
-	private Long starNumber;
-
 
 	@ManyToOne
 	@JoinColumn(name = "CUST_ID")
@@ -79,29 +72,8 @@ public class Item {
 		praiseNumber = 0L;
 	}
 
-	protected Item() {
+	public Item() {
 
-	}
-
-	public Item(String content) {
-		this.content = content;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	/**
-	 * 当为文件类型的时候是 URL，
-	 * 
-	 * @return
-	 */
-	public String getContent() {
-		return content;
 	}
 
 	public void setStarBys(Set<User> starBys) {

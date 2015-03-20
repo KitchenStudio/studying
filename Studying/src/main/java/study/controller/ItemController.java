@@ -39,6 +39,7 @@ import study.entity.FileItem;
 import study.entity.Item;
 import study.entity.Message;
 import study.entity.User;
+import study.model.DetailItem;
 import study.model.ListItem;
 import study.repository.FileItemRepository;
 import study.repository.ItemRepository;
@@ -94,7 +95,7 @@ public class ItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	List<ListItem> list(Pageable pageable) {
+	List<ListItem> get(Pageable pageable) {
 		Page<Item> page = itemRepository.findAll(pageable);
 
 		List<ListItem> items = new ArrayList<>();
@@ -106,6 +107,15 @@ public class ItemController {
 
 		return items;
 	}
+	
+	@RequestMapping(value = "{id}", method = RequestMethod.GET)
+	DetailItem get(@PathVariable("id") Item item) {
+		DetailItem detailItem = new DetailItem();
+		detailItem.setUserFigure(item.getOwner().getFigure().getUrl());
+		
+		return detailItem;
+	}
+	
 
 	@RequestMapping(value = "/loadmore", method = RequestMethod.POST)
 	List<Item> loadMore(int number) {
@@ -127,7 +137,8 @@ public class ItemController {
 	Message post(String content, Principal principal) {
 		User user = userRepository.findOne(principal.getName());
 
-		Item item = new Item(content);
+		Item item = new Item();
+		item.setContent(content);
 		item.setOwner(user);
 		itemRepository.save(item);
 
@@ -171,7 +182,7 @@ public class ItemController {
 				file.transferTo(destFile);
 				url = path + "/upload/" + destFile.getName();
 
-				FileItem fileItem = new FileItem(filename, url, FileItem.OTHER);
+				FileItem fileItem = new FileItem(filename, url, FileItem.FILE);
 				if (pictureService.isPicture(destFile.toString())) {
 					BufferedImage buffered = ImageIO.read(destFile);
 					BufferedImage bufferimage = scale(buffered,
@@ -193,7 +204,8 @@ public class ItemController {
 
 		User user = userRepository.findOne(principal.getName());
 
-		Item item = new Item(content);
+		Item item = new Item();
+		item.setContent(content);
 		item.setOwner(user);
 		item.setSubject(subject);
 		item = itemRepository.save(item);
@@ -230,7 +242,7 @@ public class ItemController {
 				file.transferTo(destFile);
 				url = path + "/upload1/" + destFile.getName();
 
-				FileItem fileItem = new FileItem(filename, url, FileItem.OTHER);
+				FileItem fileItem = new FileItem(filename, url, FileItem.FILE);
 				if (pictureService.isPicture(destFile.toString())) {
 					BufferedImage buffered = ImageIO.read(destFile);
 					BufferedImage bufferimage = scale(buffered,
