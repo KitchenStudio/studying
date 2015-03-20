@@ -41,8 +41,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @SuppressWarnings("unused")
 @JsonIgnoreProperties("starBys")
 @Entity
-public class Item extends BaseItem{
-	
+public class Item extends BaseItem {
+
 	private String subject;
 
 	private Long praiseNumber;
@@ -52,25 +52,8 @@ public class Item extends BaseItem{
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
 	private Set<FileItem> fileItems;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdTime;
-
 	@ManyToMany(mappedBy = "stars")
 	private Set<User> starBys;
-
-	@ManyToOne
-	@JoinColumn(name = "CUST_ID")
-	private User owner;
-
-	/*
-	 * 第一次保存实体前
-	 */
-	@PrePersist
-	void onUpdate() {
-		starNumber = 0L;
-		createdTime = new Date();
-		praiseNumber = 0L;
-	}
 
 	public Item() {
 
@@ -92,28 +75,12 @@ public class Item extends BaseItem{
 		return starNumber;
 	}
 
-	public void setCreatedTime(Date createdTime) {
-		this.createdTime = createdTime;
-	}
-
-	public Date getCreatedTime() {
-		return createdTime;
-	}
-
 	public Set<FileItem> getFileItems() {
 		return fileItems;
 	}
 
 	public void setFileItems(Set<FileItem> fileItems) {
 		this.fileItems = fileItems;
-	}
-
-	public void setOwner(User owner) {
-		this.owner = owner;
-	}
-
-	public User getOwner() {
-		return owner;
 	}
 
 	public String getSubject() {
@@ -123,13 +90,21 @@ public class Item extends BaseItem{
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
-	
-    public Long getPraiseNumber() {
-        return praiseNumber;
-    }
 
-    public void setPraiseNumber(Long praiseNumber) {
-        this.praiseNumber = praiseNumber;
-    }
+	public Long getPraiseNumber() {
+		return praiseNumber;
+	}
 
+	public void setPraiseNumber(Long praiseNumber) {
+		this.praiseNumber = praiseNumber;
+	}
+
+	/*
+	 * 第一次保存实体前
+	 */
+	@PrePersist
+	void onUpdate() {
+		starNumber = 0L;
+		praiseNumber = 0L;
+	}
 }

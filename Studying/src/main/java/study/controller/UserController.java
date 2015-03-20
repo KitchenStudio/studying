@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import study.entity.Authority;
+import study.entity.BaseItem;
 import study.entity.Item;
 import study.entity.Message;
 import study.entity.User;
@@ -111,7 +112,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/items", method = RequestMethod.GET)
-	Set<Item> items(Principal principal) {
+	Set<BaseItem> items(Principal principal) {
 		User user = userRepository.findOne(principal.getName());
 		return user.getItems();
 	}

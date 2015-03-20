@@ -65,7 +65,7 @@ public class User implements UserDetails {
 	private Set<Item> stars;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
-	private Set<Item> items;
+	private Set<BaseItem> items;
 
 	@JoinTable(name = "USER_AUTH")
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -181,11 +181,11 @@ public class User implements UserDetails {
 		return stars;
 	}
 
-	public void setItems(Set<Item> items) {
+	public void setItems(Set<BaseItem> items) {
 		this.items = items;
 	}
 
-	public Set<Item> getItems() {
+	public Set<BaseItem> getItems() {
 		return items;
 	}
 
