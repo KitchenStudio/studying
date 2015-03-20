@@ -1,5 +1,6 @@
 package study.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +10,7 @@ public class Comment {
 	private String userFigure;
 	private Date createdTime;
 	private String content;
-	private List<FileItem> files;
+	private List<FileItem> files = new ArrayList<>();
 
 	public String getUsername() {
 		return username;

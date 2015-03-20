@@ -1,14 +1,15 @@
 package study.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DetailItem {
 
 	private String userFigure;
 
-	private List<FileItem> files;
+	private List<FileItem> files = new ArrayList<>();
 
-	private List<Comment> comments;
+	private List<Comment> comments = new ArrayList<>();
 
 	public String getUserFigure() {
 		return userFigure;

@@ -12,6 +12,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -35,10 +36,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.util.BeanUtil;
 
+import study.entity.CommentItem;
 import study.entity.FileItem;
 import study.entity.Item;
 import study.entity.Message;
 import study.entity.User;
+import study.model.Comment;
 import study.model.DetailItem;
 import study.model.ListItem;
 import study.repository.FileItemRepository;
@@ -112,6 +115,21 @@ public class ItemController {
 	DetailItem get(@PathVariable("id") Item item) {
 		DetailItem detailItem = new DetailItem();
 		detailItem.setUserFigure(item.getOwner().getFigure().getUrl());
+		
+		Set<CommentItem> comments = item.getComments();
+		for (CommentItem commentItem: comments) {
+			Comment comment = new Comment();
+			comment.setContent(commentItem.getContent());
+			comment.setCreatedTime(commentItem.getCreatedTime());
+			comment.setUserFigure(commentItem.getOwner().getFigure().getUrl());
+			comment.setUsername(commentItem.getOwner().getNickname());
+			
+			for (FileItem fileItem:  commentItem.getFiles()) {
+				study.model.FileItem file = new study.model.FileItem();
+				BeanUtils.copyProperties(fileItem, file);
+				comment.getFiles().add(file);
+			}
+		}
 		
 		return detailItem;
 	}

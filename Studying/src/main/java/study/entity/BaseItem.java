@@ -55,6 +55,14 @@ public class BaseItem {
 		this.content = content;
 	}
 
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
+
 	public Set<FileItem> getFiles() {
 		return files;
 	}

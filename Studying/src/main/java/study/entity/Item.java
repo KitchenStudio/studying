@@ -55,6 +55,9 @@ public class Item extends BaseItem {
 	@ManyToMany(mappedBy = "stars")
 	private Set<User> starBys;
 
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
+	private Set<CommentItem> comments;
+
 	public Item() {
 
 	}
@@ -97,6 +100,14 @@ public class Item extends BaseItem {
 
 	public void setPraiseNumber(Long praiseNumber) {
 		this.praiseNumber = praiseNumber;
+	}
+
+	public Set<CommentItem> getComments() {
+		return comments;
+	}
+
+	public void setComments(Set<CommentItem> comments) {
+		this.comments = comments;
 	}
 
 	/*
