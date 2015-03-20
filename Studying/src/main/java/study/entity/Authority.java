@@ -1,4 +1,4 @@
-package study.model;
+package study.entity;
 
 import java.util.Set;
 

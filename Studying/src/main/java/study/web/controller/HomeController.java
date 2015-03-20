@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import study.model.Item;
+import study.entity.Item;
 import study.repository.ItemRepository;
 
 @Controller

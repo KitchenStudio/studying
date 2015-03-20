@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import study.model.Item;
-import study.model.User;
+import study.entity.Item;
+import study.entity.User;
 import study.repository.ItemRepository;
 import study.repository.UserRepository;
 

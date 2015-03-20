@@ -1,4 +1,4 @@
-package study.model;
+package study.entity;
 
 import java.util.Collection;
 import java.util.Set;
@@ -7,8 +7,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 
@@ -24,11 +26,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  *
  */
 /*
- * @manytomany 是多对多的关系，两个实体之间有主从之分也可以没有主从之分。
- * 如果有主从之分就使用 mappedBy 标识出谁是主（在从属的实体属性上标识）
+ * @manytomany 是多对多的关系，两个实体之间有主从之分也可以没有主从之分。 如果有主从之分就使用 mappedBy
+ * 标识出谁是主（在从属的实体属性上标识）
  */
 @JsonIgnoreProperties({ "authorities", "accountNonExpired", "accountNonLocked",
-		"credentialsNonExpired", "enabled", "password", "items", "stars"})
+		"credentialsNonExpired", "enabled", "password", "items", "stars" })
 @Entity
 public class User implements UserDetails {
 
@@ -51,14 +53,18 @@ public class User implements UserDetails {
 
 	private String nickname;
 
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "FIGURE_ID")
+	private FileItem figure;
+
 	@Email
 	private String mail;
-	
+
 	@JoinTable(name = "ITEM_STAR_BY")
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<Item> stars;
-	
-	@OneToMany(cascade=CascadeType.ALL, mappedBy="owner")
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
 	private Set<Item> items;
 
 	@JoinTable(name = "USER_AUTH")
@@ -166,23 +172,31 @@ public class User implements UserDetails {
 	public String getMail() {
 		return mail;
 	}
-	
+
 	public void setStars(Set<Item> stars) {
 		this.stars = stars;
 	}
-	
+
 	public Set<Item> getStars() {
 		return stars;
 	}
-	
+
 	public void setItems(Set<Item> items) {
 		this.items = items;
 	}
-	
+
 	public Set<Item> getItems() {
 		return items;
 	}
-	
+
+	public FileItem getFigure() {
+		return figure;
+	}
+
+	public void setFigure(FileItem figure) {
+		this.figure = figure;
+	}
+
 	@Override
 	public String toString() {
 		return "User [username=" + username + ", password=" + password

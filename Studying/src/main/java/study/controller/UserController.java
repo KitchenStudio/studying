@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import study.model.Authority;
-import study.model.Item;
-import study.model.Message;
-import study.model.User;
+import study.entity.Authority;
+import study.entity.Item;
+import study.entity.Message;
+import study.entity.User;
 import study.repository.AuthorityRepository;
 import study.repository.UserRepository;
 
@@ -115,5 +115,7 @@ public class UserController {
 		User user = userRepository.findOne(principal.getName());
 		return user.getItems();
 	}
+	
+	
 
 }

@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,10 +33,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
-import study.model.FileItem;
-import study.model.Item;
-import study.model.Message;
-import study.model.User;
+import com.fasterxml.jackson.databind.util.BeanUtil;
+
+import study.entity.FileItem;
+import study.entity.Item;
+import study.entity.Message;
+import study.entity.User;
+import study.model.ListItem;
 import study.repository.FileItemRepository;
 import study.repository.ItemRepository;
 import study.repository.UserRepository;
@@ -64,10 +68,9 @@ public class ItemController {
 
 	@Autowired
 	private ItemRepository itemRepository;
-	
+
 	@Autowired
 	private PictureService pictureService;
-	
 
 	@Autowired
 	private FileItemRepository fileItemRepository;
@@ -91,21 +94,27 @@ public class ItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	List<Item> list(Pageable pageable) {
-		System.out.println("method is ok");
+	List<ListItem> list(Pageable pageable) {
 		Page<Item> page = itemRepository.findAll(pageable);
-		
-		
-		return page.getContent();
+
+		List<ListItem> items = new ArrayList<>();
+		for (Item item : page) {
+			ListItem listItem = new ListItem();
+			BeanUtils.copyProperties(item, listItem);
+			items.add(listItem);
+		}
+
+		return items;
 	}
 
-	@RequestMapping(value="/loadmore",method=RequestMethod.POST)
-	List<Item> loadMore(int number){
+	@RequestMapping(value = "/loadmore", method = RequestMethod.POST)
+	List<Item> loadMore(int number) {
 		Pageable pageable = new PageRequest(number, 20);
 		Page<Item> page = itemRepository.findAll(pageable);
 		System.out.println(page.getContent());
 		return page.getContent();
 	}
+
 	/**
 	 * curl -u 18366116016:..xiao -X POST -d "content=hello"
 	 * 127.0.0.1:8080/api/v1/item/ | python -mjson.tool
@@ -128,12 +137,15 @@ public class ItemController {
 	/*
 	 * FIXME 在这里每一次判断 upload 文件夹是否存在不是一个好的方式 我们需要在应用启动的时候做这个判断
 	 */
-	@RequestMapping(value="/file",method= RequestMethod.POST)
-	Message uploadFile(@RequestParam("uploadfile")ArrayList<MultipartFile> files,HttpServletRequest request){
+	@RequestMapping(value = "/file", method = RequestMethod.POST)
+	Message uploadFile(
+			@RequestParam("uploadfile") ArrayList<MultipartFile> files,
+			HttpServletRequest request) {
 		System.out.println("方法执行那个了");
 		saveFile(files, request);
 		return new Message(1, "success");
 	}
+
 	@RequestMapping(value = "/files", method = RequestMethod.POST)
 	Message postWithFiles(String content, String subject,
 			@RequestParam("file") ArrayList<MultipartFile> files,
@@ -194,8 +206,9 @@ public class ItemController {
 
 		return new Message(0, "success");
 	}
-	
-	private void saveFile(ArrayList<MultipartFile> files,HttpServletRequest request){
+
+	private void saveFile(ArrayList<MultipartFile> files,
+			HttpServletRequest request) {
 		String syspath = request.getServletContext().getRealPath("/");
 		File upload = new File(syspath + "/upload");
 		String path = request.getContextPath();
@@ -228,13 +241,13 @@ public class ItemController {
 					ImageIO.write(bufferimage, fileresize[1].toString(),
 							new File(fileresize[0] + "resize" + "."
 									+ fileresize[1]));
-				}else{
-					
+				} else {
+
 				}
 				fileItems.add(fileItem);
 			} catch (IOException e) {
 				e.printStackTrace();
-				
+
 			}
 		}
 	}
@@ -288,5 +301,5 @@ public class ItemController {
 		}
 		return dbi;
 	}
-	
+
 }
