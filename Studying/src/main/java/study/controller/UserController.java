@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import study.entity.Authority;
 import study.entity.BaseItem;
+import study.entity.CommentItem;
 import study.entity.Item;
 import study.entity.Message;
 import study.entity.User;
@@ -80,7 +81,7 @@ public class UserController {
      * 事实上，我们会统一这个行为，有发生相应的错误都会设置 status code，以及发送一段
      * json 表示相关信息
 	 */
-	@RequestMapping(value = "/info", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{username}/info", method = RequestMethod.PUT)
 	Message info(@Valid @RequestBody User form,
 			@PathVariable("username") User user
 			) {
@@ -99,7 +100,9 @@ public class UserController {
 		return new Message(0, "success");
 	}
 	
-	@RequestMapping(value = "/info", method = RequestMethod.GET)
+	
+	
+	@RequestMapping(value = "/{username}/info", method = RequestMethod.GET)
 	User info(@PathVariable("username") User user) {
 		return user;
 	}
@@ -114,7 +117,18 @@ public class UserController {
 	@RequestMapping(value = "/items", method = RequestMethod.GET)
 	Set<BaseItem> items(Principal principal) {
 		User user = userRepository.findOne(principal.getName());
-		return user.getItems();
+
+		for (BaseItem item: user.getItems()) {
+
+			if (item instanceof Item){
+				
+			} else if (item instanceof CommentItem) {
+				
+			}
+			
+		}
+		
+		return null;
 	}
 	
 	
