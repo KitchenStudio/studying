@@ -185,7 +185,7 @@ public class ItemController {
 				FileItem fileItem = new FileItem(filename, url, FileItem.FILE);
 				if (pictureService.isPicture(destFile.toString())) {
 					BufferedImage buffered = ImageIO.read(destFile);
-					BufferedImage bufferimage = scale(buffered,
+					BufferedImage bufferimage = pictureService.scale(buffered,
 							BufferedImage.TYPE_INT_RGB,
 							buffered.getWidth() / 2, buffered.getHeight() / 2,
 							0.5, 0.5);
@@ -245,7 +245,7 @@ public class ItemController {
 				FileItem fileItem = new FileItem(filename, url, FileItem.FILE);
 				if (pictureService.isPicture(destFile.toString())) {
 					BufferedImage buffered = ImageIO.read(destFile);
-					BufferedImage bufferimage = scale(buffered,
+					BufferedImage bufferimage = pictureService.scale(buffered,
 							BufferedImage.TYPE_INT_RGB,
 							buffered.getWidth() / 2, buffered.getHeight() / 2,
 							0.5, 0.5);
@@ -284,34 +284,5 @@ public class ItemController {
 		return new Message(0, "success");
 	}
 
-	/**
-	 * scale image
-	 * 
-	 * @param sbi
-	 *            image to scale
-	 * @param imageType
-	 *            type of image
-	 * @param dWidth
-	 *            width of destination image
-	 * @param dHeight
-	 *            height of destination image
-	 * @param fWidth
-	 *            x-factor for transformation / scaling
-	 * @param fHeight
-	 *            y-factor for transformation / scaling
-	 * @return scaled image
-	 */
-	public static BufferedImage scale(BufferedImage sbi, int imageType,
-			int dWidth, int dHeight, double fWidth, double fHeight) {
-		BufferedImage dbi = null;
-		if (sbi != null) {
-			dbi = new BufferedImage(dWidth, dHeight, imageType);
-			Graphics2D g = dbi.createGraphics();
-			AffineTransform at = AffineTransform.getScaleInstance(fWidth,
-					fHeight);
-			g.drawRenderedImage(sbi, at);
-		}
-		return dbi;
-	}
 
 }
