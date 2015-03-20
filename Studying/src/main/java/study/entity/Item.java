@@ -2,6 +2,7 @@ package study.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -56,7 +57,7 @@ public class Item extends BaseItem {
 	private Set<User> starBys;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
-	private Set<CommentItem> comments;
+	private Set<CommentItem> comments = new HashSet<>();
 
 	public Item() {
 

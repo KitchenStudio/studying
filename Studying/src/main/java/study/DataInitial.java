@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import study.entity.CommentItem;
 import study.entity.Item;
 import study.entity.User;
+import study.repository.CommentRepository;
 import study.repository.ItemRepository;
 import study.repository.UserRepository;
 
@@ -16,6 +18,9 @@ public class DataInitial {
 
 	@Autowired
 	private ItemRepository itemRepository;
+	
+	@Autowired
+	private CommentRepository commentRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -34,8 +39,17 @@ public class DataInitial {
 			item.setContent("学友即在一起共同学习、读书的人，是指学习上的朋友。在同学中感情较深的并建立了友谊的学生、学员对同伴的称呼。它不同于一般的同学。它的圈子是在学生和学员中，有学习情感交往的人。");
 			item.setOwner(user);
 			item.setStarNumber(0L);
-
+			
 			itemRepository.save(item);
+
+			for (int j = 0; j < 4; j++) {
+				CommentItem commentItem = new CommentItem();
+				commentItem.setContent("真不错的资源");
+				commentItem.setOwner(user);
+				commentItem.setItem(item);
+				commentRepository.save(commentItem);
+				item.getComments().add(commentItem);
+			}
 		}
 
 		return SUCCESS;

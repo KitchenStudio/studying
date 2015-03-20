@@ -19,7 +19,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class BaseItem {
+public abstract class BaseItem {
 
 	@Id
 	@GeneratedValue
