@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * 如果有主从之分就使用 mappedBy 标识出谁是主（在从属的实体属性上标识）
  */
 @JsonIgnoreProperties({ "authorities", "accountNonExpired", "accountNonLocked",
-		"credentialsNonExpired", "enabled", "password", "items"})
+		"credentialsNonExpired", "enabled", "password", "items", "stars"})
 @Entity
 public class User implements UserDetails {
 

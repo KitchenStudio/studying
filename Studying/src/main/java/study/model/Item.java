@@ -1,5 +1,6 @@
 package study.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
 
@@ -47,6 +48,26 @@ public class Item {
 	private Long id;
 
 	private String content;
+	
+	private String subject;
+
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+	
+    public Long getPraiseNumber() {
+        return praiseNumber;
+    }
+
+    public void setPraiseNumber(Long praiseNumber) {
+        this.praiseNumber = praiseNumber;
+    }
+
+    private Long praiseNumber;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
 	private Set<FileItem> fileItems;
@@ -59,6 +80,7 @@ public class Item {
 
 	private Long starNumber;
 
+
 	@ManyToOne
 	@JoinColumn(name = "CUST_ID")
 	private User owner;
@@ -70,6 +92,7 @@ public class Item {
 	void onUpdate() {
 		starNumber = 0L;
 		createdTime = new Date();
+		praiseNumber = 0L;
 	}
 
 	protected Item() {
