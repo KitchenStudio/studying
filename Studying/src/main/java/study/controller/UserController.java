@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import study.entity.CommentItem;
 import study.entity.Item;
 import study.entity.Message;
 import study.entity.User;
+import study.model.Userinfo;
 import study.repository.AuthorityRepository;
 import study.repository.UserRepository;
 
@@ -45,7 +47,7 @@ public class UserController {
 	private BCryptPasswordEncoder encoder;
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	Message registe(@RequestParam("username") String username,
+	public Message registe(@RequestParam("username") String username,
 			@RequestParam("password") String password) {
 
 		User u = userRepository.findOne(username);
@@ -66,71 +68,74 @@ public class UserController {
 	 * 
 	 * 关于这个 @Valid 会对提交的 json 进行验证
 	 * 
-	 * 如果出错，会出现这样的错误
-	 * {
-     *    "error": "Bad Request",
-     *    "exception": "org.springframework.web.bind.MethodArgumentNotValidException",
-     *    "message": "Validation failed for argument at index 0 in method: study.model.Message study.controller.UserController.info(study.form.UserForm,study.model.User,org.springframework.validation.BindingResult), with 1 error(s): [Field error in object 'userForm' on field 'mail': rejected value [fsdf]; codes [Email.userForm.mail,Email.mail,Email.java.lang.String,Email]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [userForm.mail,mail]; arguments []; default message [mail],[Ljavax.validation.constraints.Pattern$Flag;@5a7f7a03,.*]; default message [not a well-formed email address]] ",
-     *    "path": "/user/18366116016/info",
-     *    "status": 400,
-     *    "timestamp": 1418285229360
-     * }
-     *
-     * 所以 客户端需要对status code 进行判断
-     * 
-     * 事实上，我们会统一这个行为，有发生相应的错误都会设置 status code，以及发送一段
-     * json 表示相关信息
+	 * 如果出错，会出现这样的错误 { "error": "Bad Request", "exception":
+	 * "org.springframework.web.bind.MethodArgumentNotValidException",
+	 * "message":
+	 * "Validation failed for argument at index 0 in method: study.model.Message study.controller.UserController.info(study.form.UserForm,study.model.User,org.springframework.validation.BindingResult), with 1 error(s): [Field error in object 'userForm' on field 'mail': rejected value [fsdf]; codes [Email.userForm.mail,Email.mail,Email.java.lang.String,Email]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [userForm.mail,mail]; arguments []; default message [mail],[Ljavax.validation.constraints.Pattern$Flag;@5a7f7a03,.*]; default message [not a well-formed email address]] "
+	 * , "path": "/user/18366116016/info", "status": 400, "timestamp":
+	 * 1418285229360 }
+	 * 
+	 * 所以 客户端需要对status code 进行判断
+	 * 
+	 * 事实上，我们会统一这个行为，有发生相应的错误都会设置 status code，以及发送一段 json 表示相关信息
 	 */
 	@RequestMapping(value = "/{username}/info", method = RequestMethod.PUT)
-	Message info(@Valid @RequestBody User form,
-			@PathVariable("username") User user
-			) {
-		if (form.getRealname() != null) {
-			user.setRealname(form.getRealname());
+	public Message info(@Valid @RequestBody Userinfo userinfo,
+			@PathVariable("username") User user/*, BindingResult result*/) {
+		// 按音序排列，方便找遗漏或者错误
+		if (userinfo.getAge() != null) {
+			// TODO user add age
+		}		
+		
+		if (userinfo.getEmail() != null) {
+			// TODO User add email
 		}
-
-		if (form.getNickname() != null) {
-			user.setNickname(form.getNickname());
+		
+		if (userinfo.getNickname() != null) {
+			user.setNickname(userinfo.getNickname());
 		}
-
-		if (form.getMail() != null) {
-			user.setMail(form.getMail());
+		
+		if (userinfo.getPassword() != null) {
+			user.setPassword(userinfo.getPassword());
+		}
+		
+		if (userinfo.getPhonenumber() != null) {
+			// TODO User add phonenumber
+		}
+		
+		if (userinfo.getRealname() != null) {
+			user.setRealname(userinfo.getRealname());
 		}
 
 		return new Message(0, "success");
 	}
-	
-	
-	
+
 	@RequestMapping(value = "/{username}/info", method = RequestMethod.GET)
-	User info(@PathVariable("username") User user) {
+	public User info(@PathVariable("username") User user) {
 		return user;
 	}
-	
+
 	@RequestMapping(value = "/stars", method = RequestMethod.GET)
-	Set<Item> stars(Principal principal) {
-		
+	public Set<Item> stars(Principal principal) {
+
 		User user = userRepository.findOne(principal.getName());
 		return user.getStars();
 	}
-	
+
 	@RequestMapping(value = "/items", method = RequestMethod.GET)
-	Set<BaseItem> items(Principal principal) {
+	public Set<BaseItem> items(Principal principal) {
 		User user = userRepository.findOne(principal.getName());
 
-		for (BaseItem item: user.getItems()) {
+		for (BaseItem item : user.getItems()) {
 
-			if (item instanceof Item){
-				
+			if (item instanceof Item) {
+
 			} else if (item instanceof CommentItem) {
-				
+
 			}
-			
+
 		}
-		
 		return null;
 	}
-	
-	
 
 }
