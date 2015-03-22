@@ -115,7 +115,8 @@ public class Item extends BaseItem {
 	 * 第一次保存实体前
 	 */
 	@PrePersist
-	void onUpdate() {
+	private void onUpdateItem() {
+//		super.onUpdate();
 		starNumber = 0L;
 		praiseNumber = 0L;
 	}

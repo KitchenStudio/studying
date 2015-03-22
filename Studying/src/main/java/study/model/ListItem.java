@@ -7,8 +7,8 @@ public class ListItem {
 	private Long id;
 	private String content;
 	private String subject;
-	private Long userId;
-	private String userName;
+	private String userId;
+	private String nickname;
 	private Date createdTime;
 
 	private Integer ups;
@@ -39,20 +39,20 @@ public class ListItem {
 		this.subject = subject;
 	}
 
-	public Long getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getNickname() {
+		return nickname;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
 
 	public Date getCreatedTime() {

@@ -80,7 +80,7 @@ public class BaseItem {
 	}
 
 	@PrePersist
-	void onUpdate() {
+	private void onUpdateBaseItem() {
 		createdTime = new Date();
 	}
 }

@@ -107,10 +107,12 @@ public class ItemController {
 		for (Item item : page) {
 			ListItem listItem = new ListItem();
 			BeanUtils.copyProperties(item, listItem);
-			listItem.setUserName(item.getOwner().getNickname());
+			listItem.setNickname(item.getOwner().getNickname());
 			listItem.setStars(0);
 			listItem.setUps(0);
 			listItem.setComments(item.getComments().size());
+			listItem.setCreatedTime(item.getCreatedTime());
+			listItem.setUserId(item.getOwner().getUsername());
 			items.add(listItem);
 		}
 
@@ -144,14 +146,6 @@ public class ItemController {
 		return detailItem;
 	}
 
-	@RequestMapping(value = "/loadmore", method = RequestMethod.POST)
-	List<Item> loadMore(int number) {
-		Pageable pageable = new PageRequest(number, 20);
-		Page<Item> page = itemRepository.findAll(pageable);
-		System.out.println(page.getContent());
-		return page.getContent();
-	}
-
 	/**
 	 * curl -u 18366116016:..xiao -X POST -d "content=hello"
 	 * 127.0.0.1:8080/api/v1/item/ | python -mjson.tool
@@ -175,14 +169,6 @@ public class ItemController {
 	/*
 	 * FIXME 在这里每一次判断 upload 文件夹是否存在不是一个好的方式 我们需要在应用启动的时候做这个判断
 	 */
-	@RequestMapping(value = "/file", method = RequestMethod.POST)
-	Message uploadFile(
-			@RequestParam("uploadfile") ArrayList<MultipartFile> files,
-			HttpServletRequest request) {
-		System.out.println("方法执行那个了");
-		saveFile(files, request);
-		return new Message(1, "success");
-	}
 
 	@RequestMapping(value = "/files", method = RequestMethod.POST)
 	Message postWithFiles(String content, String subject,
@@ -230,12 +216,13 @@ public class ItemController {
 		}
 
 		User user = userRepository.findOne(principal.getName());
-
+		
 		Item item = new Item();
 		item.setContent(content);
 		item.setOwner(user);
 		item.setSubject(subject);
 		item = itemRepository.save(item);
+		
 
 		for (FileItem fileItem : fileItems) {
 			fileItem.setItem(item);
@@ -246,50 +233,6 @@ public class ItemController {
 		return new Message(0, "success");
 	}
 
-	private void saveFile(ArrayList<MultipartFile> files,
-			HttpServletRequest request) {
-		String syspath = request.getServletContext().getRealPath("/");
-		File upload = new File(syspath + "/upload");
-		String path = request.getContextPath();
-		if (!upload.isDirectory()) {
-			upload.mkdir();
-
-		}
-		String url = null;
-		ArrayList<FileItem> fileItems = new ArrayList<>();
-
-		for (MultipartFile file : files) {
-
-			try {
-				String filename = file.getOriginalFilename();
-				File destFile = File.createTempFile("study-", "-" + filename,
-						upload);
-
-				System.out.println(destFile.toString());
-				file.transferTo(destFile);
-				url = path + "/upload1/" + destFile.getName();
-
-				FileItem fileItem = new FileItem(filename, url, FileItem.FILE);
-				if (pictureService.isPicture(destFile.toString())) {
-					BufferedImage buffered = ImageIO.read(destFile);
-					BufferedImage bufferimage = pictureService.scale(buffered,
-							BufferedImage.TYPE_INT_RGB,
-							buffered.getWidth() / 2, buffered.getHeight() / 2,
-							0.5, 0.5);
-					String[] fileresize = destFile.toString().split("\\.");
-					ImageIO.write(bufferimage, fileresize[1].toString(),
-							new File(fileresize[0] + "resize" + "."
-									+ fileresize[1]));
-				} else {
-
-				}
-				fileItems.add(fileItem);
-			} catch (IOException e) {
-				e.printStackTrace();
-
-			}
-		}
-	}
 
 	// TODO 这边更新 赞的数量 需要写成一个事务
 	// 赞即收藏
