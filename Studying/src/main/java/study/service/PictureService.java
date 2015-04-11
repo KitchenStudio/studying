@@ -7,4 +7,5 @@ public interface PictureService {
 
 	public BufferedImage scale(BufferedImage sbi, int imageType, int dWidth,
 			int dHeight, double fWidth, double fHeight);
+	public boolean isSound(String filename);
 }

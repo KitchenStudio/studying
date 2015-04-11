@@ -60,4 +60,12 @@ public class PictureServiceImpl implements PictureService{
 		}
 		return dbi;
 	}
+
+	public boolean isSound(String filename) {
+		// TODO Auto-generated method stub
+		if(filename.split("\\.")[1].equals("3gp")){
+			return true;
+		}
+		return false;
+	}
 }

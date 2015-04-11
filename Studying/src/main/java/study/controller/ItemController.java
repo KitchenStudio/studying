@@ -281,8 +281,7 @@ public class ItemController {
 					file.transferTo(destFile);
 					url = path + "/upload/" + destFile.getName();
 
-					FileItem fileItem = new FileItem(filename, url,
-							FileItem.FILE);
+					FileItem fileItem = null; 
 					if (pictureService.isPicture(destFile.getPath())) {
 						System.out.println("is Picture");
 						BufferedImage buffered = ImageIO.read(destFile);
@@ -294,6 +293,14 @@ public class ItemController {
 						ImageIO.write(bufferimage, fileresize[1].toString(),
 								new File(fileresize[0] + "resize" + "."
 										+ fileresize[1]));
+						fileItem= new FileItem(filename, url,
+								FileItem.PICTURE);
+					}else if(pictureService.isSound(destFile.toString())){
+						fileItem= new FileItem(filename, url,
+								FileItem.AUDIO);
+					}else{
+						fileItem= new FileItem(filename, url,
+								FileItem.FILE);
 					}
 					fileItems.add(fileItem);
 				} catch (IOException e) {
