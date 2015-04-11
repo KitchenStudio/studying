@@ -113,6 +113,7 @@ public class ItemController {
 			listItem.setComments(item.getComments().size());
 			listItem.setCreatedTime(item.getCreatedTime());
 			listItem.setUserId(item.getOwner().getUsername());
+
 			items.add(listItem);
 		}
 
@@ -121,9 +122,15 @@ public class ItemController {
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	DetailItem get(@PathVariable("id") Item item) {
+
 		DetailItem detailItem = new DetailItem();
+
 		if (item.getOwner().getFigure() != null)
 			detailItem.setUserFigure(item.getOwner().getFigure().getUrl());
+		if (item.getFileItems() != null) {
+			System.out.println(item.getFileItems().size() + "size");
+			detailItem.setFiles(item.getFileItems());
+		}
 
 		Set<CommentItem> comments = item.getComments();
 		for (CommentItem commentItem : comments) {
@@ -142,7 +149,7 @@ public class ItemController {
 			}
 			detailItem.getComments().add(comment);
 		}
-
+		System.out.println(detailItem.getFiles().size());
 		return detailItem;
 	}
 
@@ -172,7 +179,7 @@ public class ItemController {
 
 	@RequestMapping(value = "/files", method = RequestMethod.POST)
 	Message postWithFiles(String content, String subject,
-			@RequestParam("file") ArrayList<MultipartFile> files,
+			@RequestParam(value = "file",required = false) ArrayList<MultipartFile> files,
 			HttpServletRequest request, Principal principal) {
 		String syspath = request.getServletContext().getRealPath("/");
 		File upload = new File(syspath + "/upload");
@@ -183,46 +190,46 @@ public class ItemController {
 		}
 		String url = null;
 		ArrayList<FileItem> fileItems = new ArrayList<>();
+		if (files != null) {
+			for (MultipartFile file : files) {
 
-		for (MultipartFile file : files) {
+				try {
+					String filename = file.getOriginalFilename();
+					File destFile = File.createTempFile("study-", "-"
+							+ filename, upload);
 
-			try {
-				String filename = file.getOriginalFilename();
-				File destFile = File.createTempFile("study-", "-" + filename,
-						upload);
+					System.out.println(destFile.toString());
+					file.transferTo(destFile);
+					url = path + "/upload/" + destFile.getName();
 
-				System.out.println(destFile.toString());
-				file.transferTo(destFile);
-				url = path + "/upload/" + destFile.getName();
-
-				FileItem fileItem = new FileItem(filename, url, FileItem.FILE);
-				if (pictureService.isPicture(destFile.toString())) {
-					BufferedImage buffered = ImageIO.read(destFile);
-					BufferedImage bufferimage = pictureService.scale(buffered,
-							BufferedImage.TYPE_INT_RGB,
-							buffered.getWidth() / 2, buffered.getHeight() / 2,
-							0.5, 0.5);
-					String[] fileresize = destFile.toString().split("\\.");
-					ImageIO.write(bufferimage, fileresize[1].toString(),
-							new File(fileresize[0] + "resize" + "."
-									+ fileresize[1]));
+					FileItem fileItem = new FileItem(filename, url,
+							FileItem.PICTURE);
+					if (pictureService.isPicture(destFile.toString())) {
+						BufferedImage buffered = ImageIO.read(destFile);
+						BufferedImage bufferimage = pictureService.scale(
+								buffered, BufferedImage.TYPE_INT_RGB,
+								buffered.getWidth() / 2,
+								buffered.getHeight() / 2, 0.5, 0.5);
+						String[] fileresize = destFile.toString().split("\\.");
+						ImageIO.write(bufferimage, fileresize[1].toString(),
+								new File(fileresize[0] + "resize" + "."
+										+ fileresize[1]));
+					}
+					fileItems.add(fileItem);
+				} catch (IOException e) {
+					e.printStackTrace();
+					return new Message(1, "failure");
 				}
-				fileItems.add(fileItem);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return new Message(1, "failure");
+
 			}
-
 		}
-
 		User user = userRepository.findOne(principal.getName());
-		
+
 		Item item = new Item();
 		item.setContent(content);
 		item.setOwner(user);
 		item.setSubject(subject);
 		item = itemRepository.save(item);
-		
 
 		for (FileItem fileItem : fileItems) {
 			fileItem.setItem(item);
@@ -232,8 +239,75 @@ public class ItemController {
 
 		return new Message(0, "success");
 	}
+	
+	@RequestMapping(value = "/saveinfo", method = RequestMethod.POST)
+	Message uploadinfo(String content, String subject,
+			HttpServletRequest request, Principal principal) {
+		
+		User user = userRepository.findOne(principal.getName());
 
+		Item item = new Item();
+		item.setContent(content);
+		item.setOwner(user);
+		item.setSubject(subject);
+		item = itemRepository.save(item);
 
+		return new Message(0, "success");
+	}
+	
+	@RequestMapping(value = "/{id}/savefile", method = RequestMethod.POST)
+	Message saveFile(@RequestParam(value = "file",required = false) ArrayList<MultipartFile> files,
+			@PathVariable("id") Item item,HttpServletRequest request, Principal principal){
+		String syspath = request.getServletContext().getRealPath("/");
+		File upload = new File(syspath + "/upload");
+		String path = request.getContextPath();
+		if (!upload.isDirectory()) {
+			upload.mkdir();
+
+		}
+		String url = null;
+		ArrayList<FileItem> fileItems = new ArrayList<>();
+		if (files != null) {
+			for (MultipartFile file : files) {
+
+				try {
+					String filename = file.getOriginalFilename();
+					File destFile = File.createTempFile("study-", "-"
+							+ filename, upload);
+
+					System.out.println(destFile.toString());
+					file.transferTo(destFile);
+					url = path + "/upload/" + destFile.getName();
+
+					FileItem fileItem = new FileItem(filename, url,
+							FileItem.FILE);
+					if (pictureService.isPicture(destFile.toString())) {
+						BufferedImage buffered = ImageIO.read(destFile);
+						BufferedImage bufferimage = pictureService.scale(
+								buffered, BufferedImage.TYPE_INT_RGB,
+								buffered.getWidth() / 2,
+								buffered.getHeight() / 2, 0.5, 0.5);
+						String[] fileresize = destFile.toString().split("\\.");
+						ImageIO.write(bufferimage, fileresize[1].toString(),
+								new File(fileresize[0] + "resize" + "."
+										+ fileresize[1]));
+					}
+					fileItems.add(fileItem);
+				} catch (IOException e) {
+					e.printStackTrace();
+					return new Message(1, "failure");
+				}
+				for (FileItem fileItem : fileItems) {
+//					fileItem.setItem(item);
+					fileItemRepository.save(fileItem);
+			
+				}
+				item.setFileItems(fileItems);
+			}
+		}
+		return new Message(0, "success");
+	}
+	
 	// TODO 这边更新 赞的数量 需要写成一个事务
 	// 赞即收藏
 	@RequestMapping(value = "/{id}/star", method = RequestMethod.PUT)

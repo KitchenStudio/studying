@@ -3,6 +3,7 @@ package study.entity;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -51,7 +52,7 @@ public class Item extends BaseItem {
 	private Long starNumber;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
-	private Set<FileItem> fileItems;
+	private List<FileItem> fileItems;
 
 	@ManyToMany(mappedBy = "stars")
 	private Set<User> starBys;
@@ -79,11 +80,11 @@ public class Item extends BaseItem {
 		return starNumber;
 	}
 
-	public Set<FileItem> getFileItems() {
+	public List<FileItem> getFileItems() {
 		return fileItems;
 	}
 
-	public void setFileItems(Set<FileItem> fileItems) {
+	public void setFileItems(List<FileItem> fileItems) {
 		this.fileItems = fileItems;
 	}
 

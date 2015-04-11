@@ -3,11 +3,13 @@ package study.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import study.entity.FileItem;
+
 public class DetailItem {
 
 	private String userFigure;
 
-	private List<FileItem> files = new ArrayList<>();
+	private List<study.entity.FileItem> files = new ArrayList<>();
 
 	private List<Comment> comments = new ArrayList<>();
 
@@ -23,8 +25,8 @@ public class DetailItem {
 		return files;
 	}
 
-	public void setFiles(List<FileItem> files) {
-		this.files = files;
+	public void setFiles(List<study.entity.FileItem> list) {
+		this.files = list;
 	}
 
 	public List<Comment> getComments() {
