@@ -251,6 +251,7 @@ public class ItemController {
 		item.setOwner(user);
 		item.setSubject(subject);
 		item = itemRepository.save(item);
+		System.out.println(item.getId()+"id");
 
 		return new Message(0, "success");
 	}
