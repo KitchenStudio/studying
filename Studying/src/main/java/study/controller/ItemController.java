@@ -298,10 +298,11 @@ public class ItemController {
 						fileItem= new FileItem(filename, url,
 								FileItem.PICTURE);
 					}else if(pictureService.isSound(destFile.getPath())){
-						System.out.println("haha");
+						System.out.println("is sound");
 						fileItem= new FileItem(filename, url,
 								FileItem.AUDIO);
 					}else{
+						System.out.println("is file");
 						fileItem= new FileItem(filename, url,
 								FileItem.FILE);
 					}

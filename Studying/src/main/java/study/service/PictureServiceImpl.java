@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import study.util.FileTypeJudge;
 
 @Service
-public class PictureServiceImpl implements PictureService{
+public class PictureServiceImpl implements PictureService {
 
 	public boolean isPicture(String filename) {
 		String imgeArray[] = { "bmp", "dib", "gif", "jfif", "jpe", "jpeg",
@@ -19,9 +19,14 @@ public class PictureServiceImpl implements PictureService{
 
 		for (int i = 0; i < imgeArray.length; i++) {
 			try {
-				System.out.println(FileTypeJudge.getType(filename)+"文件类型");
-				if ((FileTypeJudge.getType(filename).toString()).equalsIgnoreCase(imgeArray[i])) {
-					return true;
+				System.out.println(FileTypeJudge.getType(filename) + "文件类型");
+				if (FileTypeJudge.getType(filename) != null) {
+					if ((FileTypeJudge.getType(filename).toString())
+							.equalsIgnoreCase(imgeArray[i])) {
+						return true;
+					}
+				}else{
+					return false;
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -48,8 +53,8 @@ public class PictureServiceImpl implements PictureService{
 	 *            y-factor for transformation / scaling
 	 * @return scaled image
 	 */
-	public BufferedImage scale(BufferedImage sbi, int imageType,
-			int dWidth, int dHeight, double fWidth, double fHeight) {
+	public BufferedImage scale(BufferedImage sbi, int imageType, int dWidth,
+			int dHeight, double fWidth, double fHeight) {
 		BufferedImage dbi = null;
 		if (sbi != null) {
 			dbi = new BufferedImage(dWidth, dHeight, imageType);
@@ -63,7 +68,7 @@ public class PictureServiceImpl implements PictureService{
 
 	public boolean isSound(String filename) {
 		// TODO Auto-generated method stub
-		if(filename.split("\\.")[1].equals("mp4")){
+		if (filename.split("\\.")[1].equals("mp4")) {
 			return true;
 		}
 		return false;
