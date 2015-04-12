@@ -277,13 +277,14 @@ public class ItemController {
 					File destFile = File.createTempFile("study-", "-"
 							+ filename, upload);
 
-					System.out.println(destFile.toString());
+					
 					file.transferTo(destFile);
 					url = path + "/upload/" + destFile.getName();
 
 					FileItem fileItem = null; 
+					System.out.println(destFile.getPath()+"path");
 					if (pictureService.isPicture(destFile.getPath())) {
-						System.out.println("is Picture");
+					
 						BufferedImage buffered = ImageIO.read(destFile);
 						BufferedImage bufferimage = pictureService.scale(
 								buffered, BufferedImage.TYPE_INT_RGB,
@@ -293,9 +294,11 @@ public class ItemController {
 						ImageIO.write(bufferimage, fileresize[1].toString(),
 								new File(fileresize[0] + "resize" + "."
 										+ fileresize[1]));
+						System.out.println("is picture");
 						fileItem= new FileItem(filename, url,
 								FileItem.PICTURE);
-					}else if(pictureService.isSound(destFile.toString())){
+					}else if(pictureService.isSound(destFile.getPath())){
+						System.out.println("haha");
 						fileItem= new FileItem(filename, url,
 								FileItem.AUDIO);
 					}else{
@@ -303,7 +306,8 @@ public class ItemController {
 								FileItem.FILE);
 					}
 					fileItems.add(fileItem);
-				} catch (IOException e) {
+				}
+					catch (IOException e) {
 					e.printStackTrace();
 					return new Message(1, "failure");
 				}
@@ -312,7 +316,6 @@ public class ItemController {
 					fileItemRepository.save(fileItem);
 			
 				}
-				item.setFileItems(fileItems);
 			}
 		}
 		return new Message(0, "success");

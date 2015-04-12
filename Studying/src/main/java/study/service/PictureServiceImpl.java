@@ -63,7 +63,7 @@ public class PictureServiceImpl implements PictureService{
 
 	public boolean isSound(String filename) {
 		// TODO Auto-generated method stub
-		if(filename.split("\\.")[1].equals("3gp")){
+		if(filename.split("\\.")[1].equals("mp4")){
 			return true;
 		}
 		return false;
