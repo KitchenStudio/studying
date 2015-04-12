@@ -173,75 +173,76 @@ public class ItemController {
 		return new Message(0, "success");
 	}
 
-	/*
-	 * FIXME 在这里每一次判断 upload 文件夹是否存在不是一个好的方式 我们需要在应用启动的时候做这个判断
-	 */
-
-	@RequestMapping(value = "/files", method = RequestMethod.POST)
-	Message postWithFiles(String content, String subject,
-			@RequestParam(value = "file",required = false) ArrayList<MultipartFile> files,
-			HttpServletRequest request, Principal principal) {
-		String syspath = request.getServletContext().getRealPath("/");
-		File upload = new File(syspath + "/upload");
-		String path = request.getContextPath();
-		if (!upload.isDirectory()) {
-			upload.mkdir();
-
-		}
-		String url = null;
-		ArrayList<FileItem> fileItems = new ArrayList<>();
-		if (files != null) {
-			for (MultipartFile file : files) {
-
-				try {
-					String filename = file.getOriginalFilename();
-					File destFile = File.createTempFile("study-", "-"
-							+ filename, upload);
-
-					System.out.println(destFile.toString());
-					file.transferTo(destFile);
-					url = path + "/upload/" + destFile.getName();
-
-					FileItem fileItem = new FileItem(filename, url,
-							FileItem.PICTURE);
-					if (pictureService.isPicture(destFile.toString())) {
-						BufferedImage buffered = ImageIO.read(destFile);
-						BufferedImage bufferimage = pictureService.scale(
-								buffered, BufferedImage.TYPE_INT_RGB,
-								buffered.getWidth() / 2,
-								buffered.getHeight() / 2, 0.5, 0.5);
-						String[] fileresize = destFile.toString().split("\\.");
-						ImageIO.write(bufferimage, fileresize[1].toString(),
-								new File(fileresize[0] + "resize" + "."
-										+ fileresize[1]));
-					}
-					fileItems.add(fileItem);
-				} catch (IOException e) {
-					e.printStackTrace();
-					return new Message(1, "failure");
-				}
-
-			}
-		}
-		User user = userRepository.findOne(principal.getName());
-
-		Item item = new Item();
-		item.setContent(content);
-		item.setOwner(user);
-		item.setSubject(subject);
-		item = itemRepository.save(item);
-
-		for (FileItem fileItem : fileItems) {
-			fileItem.setItem(item);
-			fileItemRepository.save(fileItem);
-
-		}
-
-		return new Message(0, "success");
-	}
+//	/*
+//	 * FIXME 在这里每一次判断 upload 文件夹是否存在不是一个好的方式 我们需要在应用启动的时候做这个判断
+//	 */
+//
+//	@RequestMapping(value = "/files", method = RequestMethod.POST)
+//	Message postWithFiles(String content, String subject,
+//			@RequestParam(value = "file",required = false) ArrayList<MultipartFile> files,
+//			HttpServletRequest request, Principal principal) {
+//		String syspath = request.getServletContext().getRealPath("/");
+//		File upload = new File(syspath + "/upload");
+//		String path = request.getContextPath();
+//		if (!upload.isDirectory()) {
+//			upload.mkdir();
+//
+//		}
+//		String url = null;
+//		ArrayList<FileItem> fileItems = new ArrayList<>();
+//		if (files != null) {
+//			for (MultipartFile file : files) {
+//
+//				try {
+//					String filename = file.getOriginalFilename();
+//					File destFile = File.createTempFile("study-", "-"
+//							+ filename, upload);
+//
+//					System.out.println(destFile.toString());
+//					file.transferTo(destFile);
+//					url = path + "/upload/" + destFile.getName();
+//
+//					FileItem fileItem = new FileItem(filename, url,
+//							FileItem.PICTURE);
+//					if (pictureService.isPicture(destFile.toString())) {
+//						BufferedImage buffered = ImageIO.read(destFile);
+//						BufferedImage bufferimage = pictureService.scale(
+//								buffered, BufferedImage.TYPE_INT_RGB,
+//								buffered.getWidth() / 2,
+//								buffered.getHeight() / 2, 0.5, 0.5);
+//						String[] fileresize = destFile.toString().split("\\.");
+//						ImageIO.write(bufferimage, fileresize[1].toString(),
+//								new File(fileresize[0] + "resize" + "."
+//										+ fileresize[1]));
+//					}
+//					fileItems.add(fileItem);
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//					return new Message(1, "failure");
+//				}
+//
+//			}
+//		}
+//		User user = userRepository.findOne(principal.getName());
+//
+//		Item item = new Item();
+//		item.setContent(content);
+//		item.setOwner(user);
+//		item.setSubject(subject);
+//		item = itemRepository.save(item);
+//
+//		for (FileItem fileItem : fileItems) {
+//			fileItem.setItem(item);
+//			fileItemRepository.save(fileItem);
+//
+//		}
+//
+//		return new Message(0, "success");
+//	}
 	
+	//存储上传item的文字内容
 	@RequestMapping(value = "/saveinfo", method = RequestMethod.POST)
-	Message uploadinfo(String content, String subject,
+	String uploadinfo(String content, String subject,
 			HttpServletRequest request, Principal principal) {
 		
 		User user = userRepository.findOne(principal.getName());
@@ -252,13 +253,14 @@ public class ItemController {
 		item.setSubject(subject);
 		item = itemRepository.save(item);
 		System.out.println(item.getId()+"id");
-
-		return new Message(0, "success");
+		System.out.println(item.getId()+"idid");
+		return item.getId().toString();
 	}
-	
+	//存储上传item的文件内容
 	@RequestMapping(value = "/{id}/savefile", method = RequestMethod.POST)
 	Message saveFile(@RequestParam(value = "file",required = false) ArrayList<MultipartFile> files,
 			@PathVariable("id") Item item,HttpServletRequest request, Principal principal){
+		
 		String syspath = request.getServletContext().getRealPath("/");
 		File upload = new File(syspath + "/upload");
 		String path = request.getContextPath();
@@ -276,13 +278,14 @@ public class ItemController {
 					File destFile = File.createTempFile("study-", "-"
 							+ filename, upload);
 
-					System.out.println(destFile.toString());
+					
 					file.transferTo(destFile);
 					url = path + "/upload/" + destFile.getName();
 
-					FileItem fileItem = new FileItem(filename, url,
-							FileItem.FILE);
-					if (pictureService.isPicture(destFile.toString())) {
+					FileItem fileItem = null; 
+					System.out.println(destFile.getPath()+"path");
+					if (pictureService.isPicture(destFile.getPath())) {
+					
 						BufferedImage buffered = ImageIO.read(destFile);
 						BufferedImage bufferimage = pictureService.scale(
 								buffered, BufferedImage.TYPE_INT_RGB,
@@ -292,18 +295,29 @@ public class ItemController {
 						ImageIO.write(bufferimage, fileresize[1].toString(),
 								new File(fileresize[0] + "resize" + "."
 										+ fileresize[1]));
+						System.out.println("is picture");
+						fileItem= new FileItem(filename, url,
+								FileItem.PICTURE);
+					}else if(pictureService.isSound(destFile.getPath())){
+						System.out.println("is sound");
+						fileItem= new FileItem(filename, url,
+								FileItem.AUDIO);
+					}else{
+						System.out.println("is file");
+						fileItem= new FileItem(filename, url,
+								FileItem.FILE);
 					}
 					fileItems.add(fileItem);
-				} catch (IOException e) {
+				}
+					catch (IOException e) {
 					e.printStackTrace();
 					return new Message(1, "failure");
 				}
 				for (FileItem fileItem : fileItems) {
-//					fileItem.setItem(item);
+					fileItem.setItem(item);
 					fileItemRepository.save(fileItem);
 			
 				}
-				item.setFileItems(fileItems);
 			}
 		}
 		return new Message(0, "success");
