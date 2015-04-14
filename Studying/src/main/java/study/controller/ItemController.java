@@ -2,20 +2,27 @@ package study.controller;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -102,7 +109,7 @@ public class ItemController {
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	List<ListItem> get(Pageable pageable) {
 		Page<Item> page = itemRepository.findAll(pageable);
-
+		System.out.println("hellohello");
 		List<ListItem> items = new ArrayList<>();
 		for (Item item : page) {
 			ListItem listItem = new ListItem();
@@ -173,78 +180,79 @@ public class ItemController {
 		return new Message(0, "success");
 	}
 
-//	/*
-//	 * FIXME 在这里每一次判断 upload 文件夹是否存在不是一个好的方式 我们需要在应用启动的时候做这个判断
-//	 */
-//
-//	@RequestMapping(value = "/files", method = RequestMethod.POST)
-//	Message postWithFiles(String content, String subject,
-//			@RequestParam(value = "file",required = false) ArrayList<MultipartFile> files,
-//			HttpServletRequest request, Principal principal) {
-//		String syspath = request.getServletContext().getRealPath("/");
-//		File upload = new File(syspath + "/upload");
-//		String path = request.getContextPath();
-//		if (!upload.isDirectory()) {
-//			upload.mkdir();
-//
-//		}
-//		String url = null;
-//		ArrayList<FileItem> fileItems = new ArrayList<>();
-//		if (files != null) {
-//			for (MultipartFile file : files) {
-//
-//				try {
-//					String filename = file.getOriginalFilename();
-//					File destFile = File.createTempFile("study-", "-"
-//							+ filename, upload);
-//
-//					System.out.println(destFile.toString());
-//					file.transferTo(destFile);
-//					url = path + "/upload/" + destFile.getName();
-//
-//					FileItem fileItem = new FileItem(filename, url,
-//							FileItem.PICTURE);
-//					if (pictureService.isPicture(destFile.toString())) {
-//						BufferedImage buffered = ImageIO.read(destFile);
-//						BufferedImage bufferimage = pictureService.scale(
-//								buffered, BufferedImage.TYPE_INT_RGB,
-//								buffered.getWidth() / 2,
-//								buffered.getHeight() / 2, 0.5, 0.5);
-//						String[] fileresize = destFile.toString().split("\\.");
-//						ImageIO.write(bufferimage, fileresize[1].toString(),
-//								new File(fileresize[0] + "resize" + "."
-//										+ fileresize[1]));
-//					}
-//					fileItems.add(fileItem);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//					return new Message(1, "failure");
-//				}
-//
-//			}
-//		}
-//		User user = userRepository.findOne(principal.getName());
-//
-//		Item item = new Item();
-//		item.setContent(content);
-//		item.setOwner(user);
-//		item.setSubject(subject);
-//		item = itemRepository.save(item);
-//
-//		for (FileItem fileItem : fileItems) {
-//			fileItem.setItem(item);
-//			fileItemRepository.save(fileItem);
-//
-//		}
-//
-//		return new Message(0, "success");
-//	}
-	
-	//存储上传item的文字内容
+	// /*
+	// * FIXME 在这里每一次判断 upload 文件夹是否存在不是一个好的方式 我们需要在应用启动的时候做这个判断
+	// */
+	//
+	// @RequestMapping(value = "/files", method = RequestMethod.POST)
+	// Message postWithFiles(String content, String subject,
+	// @RequestParam(value = "file",required = false) ArrayList<MultipartFile>
+	// files,
+	// HttpServletRequest request, Principal principal) {
+	// String syspath = request.getServletContext().getRealPath("/");
+	// File upload = new File(syspath + "/upload");
+	// String path = request.getContextPath();
+	// if (!upload.isDirectory()) {
+	// upload.mkdir();
+	//
+	// }
+	// String url = null;
+	// ArrayList<FileItem> fileItems = new ArrayList<>();
+	// if (files != null) {
+	// for (MultipartFile file : files) {
+	//
+	// try {
+	// String filename = file.getOriginalFilename();
+	// File destFile = File.createTempFile("study-", "-"
+	// + filename, upload);
+	//
+	// System.out.println(destFile.toString());
+	// file.transferTo(destFile);
+	// url = path + "/upload/" + destFile.getName();
+	//
+	// FileItem fileItem = new FileItem(filename, url,
+	// FileItem.PICTURE);
+	// if (pictureService.isPicture(destFile.toString())) {
+	// BufferedImage buffered = ImageIO.read(destFile);
+	// BufferedImage bufferimage = pictureService.scale(
+	// buffered, BufferedImage.TYPE_INT_RGB,
+	// buffered.getWidth() / 2,
+	// buffered.getHeight() / 2, 0.5, 0.5);
+	// String[] fileresize = destFile.toString().split("\\.");
+	// ImageIO.write(bufferimage, fileresize[1].toString(),
+	// new File(fileresize[0] + "resize" + "."
+	// + fileresize[1]));
+	// }
+	// fileItems.add(fileItem);
+	// } catch (IOException e) {
+	// e.printStackTrace();
+	// return new Message(1, "failure");
+	// }
+	//
+	// }
+	// }
+	// User user = userRepository.findOne(principal.getName());
+	//
+	// Item item = new Item();
+	// item.setContent(content);
+	// item.setOwner(user);
+	// item.setSubject(subject);
+	// item = itemRepository.save(item);
+	//
+	// for (FileItem fileItem : fileItems) {
+	// fileItem.setItem(item);
+	// fileItemRepository.save(fileItem);
+	//
+	// }
+	//
+	// return new Message(0, "success");
+	// }
+
+	// 存储上传item的文字内容
 	@RequestMapping(value = "/saveinfo", method = RequestMethod.POST)
 	String uploadinfo(String content, String subject,
 			HttpServletRequest request, Principal principal) {
-		
+
 		User user = userRepository.findOne(principal.getName());
 
 		Item item = new Item();
@@ -252,15 +260,18 @@ public class ItemController {
 		item.setOwner(user);
 		item.setSubject(subject);
 		item = itemRepository.save(item);
-		System.out.println(item.getId()+"id");
-		System.out.println(item.getId()+"idid");
+		System.out.println(item.getId() + "id");
+		System.out.println(item.getId() + "idid");
 		return item.getId().toString();
 	}
-	//存储上传item的文件内容
+
+	// 存储上传item的文件内容
 	@RequestMapping(value = "/{id}/savefile", method = RequestMethod.POST)
-	Message saveFile(@RequestParam(value = "file",required = false) ArrayList<MultipartFile> files,
-			@PathVariable("id") Item item,HttpServletRequest request, Principal principal){
-		
+	Message saveFile(
+			@RequestParam(value = "file", required = false) ArrayList<MultipartFile> files,
+			@PathVariable("id") Item item, HttpServletRequest request,
+			Principal principal) {
+
 		String syspath = request.getServletContext().getRealPath("/");
 		File upload = new File(syspath + "/upload");
 		String path = request.getContextPath();
@@ -278,51 +289,55 @@ public class ItemController {
 					File destFile = File.createTempFile("study-", "-"
 							+ filename, upload);
 
-					
 					file.transferTo(destFile);
 					url = path + "/upload/" + destFile.getName();
 
-					FileItem fileItem = null; 
-					System.out.println(destFile.getPath()+"path");
+					FileItem fileItem = null;
+					System.out.println(destFile.getPath() + "path");
 					if (pictureService.isPicture(destFile.getPath())) {
-					
+
 						BufferedImage buffered = ImageIO.read(destFile);
+						int width = buffered.getWidth() / 2;
+						int height = buffered.getHeight() / 2;
 						BufferedImage bufferimage = pictureService.scale(
-								buffered, BufferedImage.TYPE_INT_RGB,
-								buffered.getWidth() / 2,
-								buffered.getHeight() / 2, 0.5, 0.5);
+								buffered, BufferedImage.TYPE_INT_RGB, width,
+								height, 0.5, 0.5);
 						String[] fileresize = destFile.toString().split("\\.");
+						String resizePath = fileresize[0] + "resize" + "."
+								+ fileresize[1];
+						String cutPath = fileresize[0] + "resizecut" + "."
+								+ fileresize[1];
 						ImageIO.write(bufferimage, fileresize[1].toString(),
-								new File(fileresize[0] + "resize" + "."
-										+ fileresize[1]));
+								new File(resizePath));
+						if (width < height) {
+							cutCenterImage(resizePath, cutPath, width, width);
+						} else {
+							cutCenterImage(resizePath, cutPath, height, height);
+						}
 						System.out.println("is picture");
-						fileItem= new FileItem(filename, url,
-								FileItem.PICTURE);
-					}else if(pictureService.isSound(destFile.getPath())){
+						fileItem = new FileItem(filename, url, FileItem.PICTURE);
+					} else if (pictureService.isSound(destFile.getPath())) {
 						System.out.println("is sound");
-						fileItem= new FileItem(filename, url,
-								FileItem.AUDIO);
-					}else{
+						fileItem = new FileItem(filename, url, FileItem.AUDIO);
+					} else {
 						System.out.println("is file");
-						fileItem= new FileItem(filename, url,
-								FileItem.FILE);
+						fileItem = new FileItem(filename, url, FileItem.FILE);
 					}
 					fileItems.add(fileItem);
-				}
-					catch (IOException e) {
+				} catch (IOException e) {
 					e.printStackTrace();
 					return new Message(1, "failure");
 				}
 				for (FileItem fileItem : fileItems) {
 					fileItem.setItem(item);
 					fileItemRepository.save(fileItem);
-			
+
 				}
 			}
 		}
 		return new Message(0, "success");
 	}
-	
+
 	// TODO 这边更新 赞的数量 需要写成一个事务
 	// 赞即收藏
 	@RequestMapping(value = "/{id}/star", method = RequestMethod.PUT)
@@ -341,6 +356,29 @@ public class ItemController {
 		}
 
 		return new Message(0, "success");
+	}
+
+	/*
+	 * 根据尺寸图片居中裁剪
+	 */
+	public static void cutCenterImage(String src, String dest, int w, int h)
+			throws IOException {
+		String ext = src.substring(src.lastIndexOf(".") + 1);
+
+		// ImageReader声称能够解码指定格式
+		Iterator<ImageReader> it = ImageIO.getImageReadersByFormatName(ext);
+		ImageReader reader = it.next();
+		InputStream in = new FileInputStream(src);
+		ImageInputStream iis = ImageIO.createImageInputStream(in);
+		reader.setInput(iis, true);
+		ImageReadParam param = reader.getDefaultReadParam();
+		int imageIndex = 0;
+		Rectangle rect = new Rectangle((reader.getWidth(imageIndex) - w) / 2,
+				(reader.getHeight(imageIndex) - h) / 2, w, h);
+		param.setSourceRegion(rect);
+		BufferedImage bi = reader.read(0, param);
+		ImageIO.write(bi, ext, new File(dest));
+
 	}
 
 }
