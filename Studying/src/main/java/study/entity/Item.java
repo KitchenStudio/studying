@@ -49,7 +49,7 @@ public class Item extends BaseItem {
 
 	private Long praiseNumber;
 
-	private Long starNumber;
+	private Integer starNumber;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
 	private List<FileItem> fileItems;
@@ -72,11 +72,11 @@ public class Item extends BaseItem {
 		return starBys;
 	}
 
-	public void setStarNumber(Long starNumber) {
+	public void setStarNumber(Integer starNumber) {
 		this.starNumber = starNumber;
 	}
 
-	public Long getStarNumber() {
+	public Integer getStarNumber() {
 		return starNumber;
 	}
 
@@ -118,7 +118,7 @@ public class Item extends BaseItem {
 	@PrePersist
 	private void onUpdateItem() {
 //		super.onUpdate();
-		starNumber = 0L;
+		starNumber = 0;
 		praiseNumber = 0L;
 	}
 }

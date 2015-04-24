@@ -109,7 +109,6 @@ public class ItemController {
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	List<ListItem> get(Pageable pageable) {
 		Page<Item> page = itemRepository.findAll(pageable);
-		System.out.println("hellohello");
 		List<ListItem> items = new ArrayList<>();
 		for (Item item : page) {
 			ListItem listItem = new ListItem();
@@ -135,7 +134,6 @@ public class ItemController {
 		if (item.getOwner().getFigure() != null)
 			detailItem.setUserFigure(item.getOwner().getFigure().getUrl());
 		if (item.getFileItems() != null) {
-			System.out.println(item.getFileItems().size() + "size");
 			detailItem.setFiles(item.getFileItems());
 		}
 
@@ -156,7 +154,6 @@ public class ItemController {
 			}
 			detailItem.getComments().add(comment);
 		}
-		System.out.println(detailItem.getFiles().size());
 		return detailItem;
 	}
 
@@ -260,8 +257,6 @@ public class ItemController {
 		item.setOwner(user);
 		item.setSubject(subject);
 		item = itemRepository.save(item);
-		System.out.println(item.getId() + "id");
-		System.out.println(item.getId() + "idid");
 		return item.getId().toString();
 	}
 
@@ -340,7 +335,7 @@ public class ItemController {
 
 	// TODO 这边更新 赞的数量 需要写成一个事务
 	// 赞即收藏
-	@RequestMapping(value = "/{id}/star", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{id}/star", method = RequestMethod.POST)
 	Message star(@PathVariable("id") Item item, HttpServletRequest request) {
 		String username = SecurityContextHolder.getContext()
 				.getAuthentication().getName();
@@ -381,4 +376,52 @@ public class ItemController {
 
 	}
 
+	/*
+	 * 得到收藏的列表
+	 */
+	@RequestMapping(value = "/{username}/collectionlist", method = RequestMethod.GET)
+	List<ListItem> getCollection(@PathVariable("username") User user) {
+		System.out.println(user.getUsername());
+		List<Item> listcollections = user.getStars();
+		List<ListItem> items = new ArrayList<ListItem>();
+		for (Item item : listcollections) {
+			ListItem listItem = new ListItem();
+			BeanUtils.copyProperties(item, listItem);
+			listItem.setNickname(item.getOwner().getNickname());
+			listItem.setStars(item.getStarNumber());
+			listItem.setUps(0);
+			listItem.setComments(item.getComments().size());
+			listItem.setCreatedTime(item.getCreatedTime());
+			listItem.setUserId(item.getOwner().getUsername());
+
+			items.add(listItem);
+		}
+		return items;
+
+	}
+
+	/*
+	 * 搜索得到的列表
+	 */
+	@RequestMapping(value="/search",method = RequestMethod.GET)
+	List<ListItem> getSearchList(@RequestParam("keyword")String keyword){
+		List<Item> items = itemRepository.findByContentContainsOrSubjectContains(keyword,keyword);
+		List<ListItem> listitems = new ArrayList<>();
+		for (Item item : items) {
+			ListItem listItem = new ListItem();
+			BeanUtils.copyProperties(item, listItem);
+			listItem.setNickname(item.getOwner().getNickname());
+			listItem.setStars(0);
+			listItem.setUps(0);
+			listItem.setComments(item.getComments().size());
+			listItem.setCreatedTime(item.getCreatedTime());
+			listItem.setUserId(item.getOwner().getUsername());
+
+			listitems.add(listItem);
+		}
+
+		return listitems;
+	}
+	
+	 
 }

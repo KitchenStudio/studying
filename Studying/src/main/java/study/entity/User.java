@@ -1,6 +1,7 @@
 package study.entity;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -63,7 +64,7 @@ public class User implements UserDetails {
 
 	@JoinTable(name = "ITEM_STAR_BY")
 	@ManyToMany(fetch = FetchType.EAGER)
-	private Set<Item> stars;
+	private List<Item> stars;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
 	private Set<BaseItem> items;
@@ -175,11 +176,11 @@ public class User implements UserDetails {
 		return mail;
 	}
 
-	public void setStars(Set<Item> stars) {
+	public void setStars(List<Item> stars) {
 		this.stars = stars;
 	}
 
-	public Set<Item> getStars() {
+	public List<Item> getStars() {
 		return stars;
 	}
 

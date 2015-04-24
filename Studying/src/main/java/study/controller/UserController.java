@@ -2,6 +2,7 @@ package study.controller;
 
 import java.security.Principal;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -116,7 +117,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/stars", method = RequestMethod.GET)
-	public Set<Item> stars(Principal principal) {
+	public List<Item> stars(Principal principal) {
 
 		User user = userRepository.findOne(principal.getName());
 		return user.getStars();

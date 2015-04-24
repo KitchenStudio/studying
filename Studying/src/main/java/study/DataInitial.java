@@ -65,7 +65,7 @@ public class DataInitial {
 			Item item = new Item();
 			item.setContent("学友即在一起共同学习、读书的人，是指学习上的朋友。在同学中感情较深的并建立了友谊的学生、学员对同伴的称呼。它不同于一般的同学。它的圈子是在学生和学员中，有学习情感交往的人。");
 			item.setOwner(user);
-			item.setStarNumber(0L);
+			item.setStarNumber(0);
 
 			itemRepository.save(item);
 
