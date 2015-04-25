@@ -114,7 +114,7 @@ public class ItemController {
 			ListItem listItem = new ListItem();
 			BeanUtils.copyProperties(item, listItem);
 			listItem.setNickname(item.getOwner().getNickname());
-			listItem.setStars(0);
+			listItem.setStars(item.getStarNumber());
 			listItem.setUps(0);
 			listItem.setComments(item.getComments().size());
 			listItem.setCreatedTime(item.getCreatedTime());
@@ -405,6 +405,7 @@ public class ItemController {
 	 */
 	@RequestMapping(value="/search",method = RequestMethod.GET)
 	List<ListItem> getSearchList(@RequestParam("keyword")String keyword){
+		System.out.println(keyword);
 		List<Item> items = itemRepository.findByContentContainsOrSubjectContains(keyword,keyword);
 		List<ListItem> listitems = new ArrayList<>();
 		for (Item item : items) {
