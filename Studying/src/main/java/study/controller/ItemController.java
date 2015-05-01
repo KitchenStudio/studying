@@ -24,6 +24,7 @@ import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,7 @@ import study.entity.User;
 import study.model.Comment;
 import study.model.DetailItem;
 import study.model.ListItem;
+import study.repository.CommentRepository;
 import study.repository.FileItemRepository;
 import study.repository.ItemRepository;
 import study.repository.UserRepository;
@@ -87,6 +89,9 @@ public class ItemController {
 
 	@Autowired
 	private FileItemRepository fileItemRepository;
+	
+	@Autowired
+	private CommentRepository commentRepository;
 
 	/**
 	 * 
@@ -137,7 +142,7 @@ public class ItemController {
 			detailItem.setFiles(item.getFileItems());
 		}
 
-		Set<CommentItem> comments = item.getComments();
+		List<CommentItem> comments = item.getComments();
 		for (CommentItem commentItem : comments) {
 			Comment comment = new Comment();
 			comment.setContent(commentItem.getContent());
@@ -248,9 +253,11 @@ public class ItemController {
 	// 存储上传item的文字内容
 	@RequestMapping(value = "/saveinfo", method = RequestMethod.POST)
 	String uploadinfo(String content, String subject,
+			String username,
 			HttpServletRequest request, Principal principal) {
-
-		User user = userRepository.findOne(principal.getName());
+			System.out.println(username+"useruseruser");
+		User user = userRepository.findOne(username);
+		System.out.println(user.getUsername()+"user.getUsername");
 
 		Item item = new Item();
 		item.setContent(content);
@@ -297,12 +304,15 @@ public class ItemController {
 						BufferedImage bufferimage = pictureService.scale(
 								buffered, BufferedImage.TYPE_INT_RGB, width,
 								height, 0.5, 0.5);
-						String[] fileresize = destFile.toString().split("\\.");
-						String resizePath = fileresize[0] + "resize" + "."
-								+ fileresize[1];
-						String cutPath = fileresize[0] + "resizecut" + "."
-								+ fileresize[1];
-						ImageIO.write(bufferimage, fileresize[1].toString(),
+						String houzhui = destFile.toString().substring(destFile.toString().lastIndexOf(".") + 1);
+						String qianzhui =destFile.toString().substring(0,destFile.toString().lastIndexOf("."));
+						System.out.println("qianzhui"+qianzhui);
+//						String[] fileresize = destFile.toString().split("\\.");
+						String resizePath = qianzhui + "resize" + "."
+								+ houzhui;
+						String cutPath = qianzhui + "resizecut" + "."
+								+ houzhui;
+						ImageIO.write(bufferimage, houzhui.toString(),
 								new File(resizePath));
 						if (width < height) {
 							cutCenterImage(resizePath, cutPath, width, width);
@@ -336,13 +346,15 @@ public class ItemController {
 	// TODO 这边更新 赞的数量 需要写成一个事务
 	// 赞即收藏
 	@RequestMapping(value = "/{id}/star", method = RequestMethod.POST)
-	Message star(@PathVariable("id") Item item, HttpServletRequest request) {
-		String username = SecurityContextHolder.getContext()
-				.getAuthentication().getName();
-
+	String star(@PathVariable("id") Item item, @RequestParam("username")String username,HttpServletRequest request) {
+		System.out.println("collection");
+//		String username = SecurityContextHolder.getContext()
+//				.getAuthentication().getName();
+		System.out.println(username+"username");
+//
 		User user = userRepository.findOne(username);
 		if (user.getStars().contains(item)) {
-			return new Message(2, "has been starred");
+			return  "has been starred";
 		} else {
 			item.setStarNumber(item.getStarNumber() + 1);
 			item = itemRepository.save(item);
@@ -350,19 +362,37 @@ public class ItemController {
 			userRepository.save(user);
 		}
 
-		return new Message(0, "success");
+		return "success";
 	}
 
+	@RequestMapping(value="/{id}/comment",method=RequestMethod.POST)
+	String comment(@PathVariable("id")Item item,@RequestParam("content")String content,Principal principal){
+		System.out.println("commentcomment");
+		CommentItem comment = new CommentItem();
+		comment.setContent(content);
+		comment.setItem(item);
+		User user =userRepository.findOne(principal.getName());
+		comment.setOwner(user);
+		List<CommentItem> comments = item.getComments();
+		comments.add(comment);
+		item.setComments(comments);
+		commentRepository.save(comment);
+		return "success";
+	}
 	/*
 	 * 根据尺寸图片居中裁剪
 	 */
 	public static void cutCenterImage(String src, String dest, int w, int h)
 			throws IOException {
+		System.out.println(src+"srcsrc");
 		String ext = src.substring(src.lastIndexOf(".") + 1);
+		System.out.println(ext+"ext is");
+
 
 		// ImageReader声称能够解码指定格式
 		Iterator<ImageReader> it = ImageIO.getImageReadersByFormatName(ext);
 		ImageReader reader = it.next();
+		System.out.println(it+"itit"+reader);
 		InputStream in = new FileInputStream(src);
 		ImageInputStream iis = ImageIO.createImageInputStream(in);
 		reader.setInput(iis, true);
@@ -399,6 +429,8 @@ public class ItemController {
 		return items;
 
 	}
+	
+	
 
 	/*
 	 * 搜索得到的列表

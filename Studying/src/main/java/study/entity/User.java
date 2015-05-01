@@ -54,10 +54,24 @@ public class User implements UserDetails {
 	private String realname;
 
 	private String nickname;
+	
+	int age;
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
 
 	@ManyToOne()
 	@JoinColumn(name = "FIGURE_ID", nullable = true)
-	private FileItem figure;
+	private FileFigure figure;
+
+	protected User() {
+
+	}
 
 	@Email
 	private String mail;
@@ -81,13 +95,11 @@ public class User implements UserDetails {
 		enabled = true;
 	}
 
-	protected User() {
-	}
-
-	public User(String username, String password, Set<Authority> authorities) {
+		public User(String username, String password, Set<Authority> authorities,String nickname) {
 		this.username = username;
 		this.password = password;
 		this.authorities = authorities;
+		this.nickname = nickname;
 	}
 
 	public String getUsername() {
@@ -192,11 +204,11 @@ public class User implements UserDetails {
 		return items;
 	}
 
-	public FileItem getFigure() {
+	public FileFigure getFigure() {
 		return figure;
 	}
 
-	public void setFigure(FileItem figure) {
+	public void setFigure(FileFigure figure) {
 		this.figure = figure;
 	}
 

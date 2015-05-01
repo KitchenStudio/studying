@@ -58,7 +58,7 @@ public class Item extends BaseItem {
 	private Set<User> starBys;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
-	private Set<CommentItem> comments = new HashSet<>();
+	private List<CommentItem> comments = new ArrayList<>();
 
 	public Item() {
 
@@ -104,11 +104,11 @@ public class Item extends BaseItem {
 		this.praiseNumber = praiseNumber;
 	}
 
-	public Set<CommentItem> getComments() {
+	public List<CommentItem> getComments() {
 		return comments;
 	}
 
-	public void setComments(Set<CommentItem> comments) {
+	public void setComments(List<CommentItem> comments) {
 		this.comments = comments;
 	}
 

@@ -13,6 +13,24 @@ public class Userinfo {
 	private String realname;
 	private String phonenumber;
 	private Integer age;
+	private String sex;
+	private String userFigure;
+
+	public String getUserFigure() {
+		return userFigure;
+	}
+
+	public void setUserFigure(String userFigure) {
+		this.userFigure = userFigure;
+	}
+
+	public String getSex() {
+		return sex;
+	}
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
 
 	public String getEmail() {
 		return email;
